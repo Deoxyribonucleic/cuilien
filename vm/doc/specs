@@ -1,0 +1,35 @@
+Size definitions:
+-----------------------------
+|WORD, LONG, INT   | 32 bit |
+|------------------|--------|
+|SHORT             | 16 bit |
+|------------------|--------|
+|BYTE              |  8 bit |
+|------------------|--------|
+|NIBBLE            |  4 bit |
+-----------------------------
+
+The VM has 4 registers: A, B, C and D.
+
+Each instruction has the following components, whether it uses it or not:
+[16 bit operation][8 bit operand#1 flags][32 bit operand#1][8 bit operand#2 flags][32 bit operand#2]
+
+The flag field contains the following bits:
+
+7: register
+6: dereference
+5: high short
+4: low short *
+3: high byte *
+2: low byte  *
+
+The register naming:
+(X = A, B, C or D)
+
+-------------------------------------
+|                 X                 |
+|-----------------------------------|
+|       XH        |       XL        |
+|-----------------------------------|
+|  XHH   |  XHL   |  XLH   |  XLL   |
+-------------------------------------
