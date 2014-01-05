@@ -1,5 +1,5 @@
-bin: main.o args.o error.o vm.o mem.o
-	gcc main.o args.o error.o vm.o mem.o -o bin
+bin: main.o args.o error.o vm.o mem.o cpu.o instr.o
+	gcc main.o args.o error.o vm.o mem.o cpu.o instr.o -o bin
 
 main.o: main.c
 	gcc -c main.c
@@ -15,3 +15,14 @@ vm.o: vm.c
 
 mem.o: mem.c
 	gcc -c mem.c
+
+cpu.o: cpu.c
+	gcc -c cpu.c
+
+instr.o: instr.c
+	gcc -c instr.c
+
+clean:
+	-rm *.o
+	-rm bin
+	-rm *~

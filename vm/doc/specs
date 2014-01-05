@@ -9,10 +9,11 @@ Size definitions:
 |NIBBLE            |  4 bit |
 -----------------------------
 
-The VM has 4 registers: A, B, C and D.
+The VM has 4 word-sized (32 bit) registers: A, B, C and D.
 
 Each instruction has the following components, whether it uses it or not:
-[16 bit operation][8 bit operand#1 flags][32 bit operand#1][8 bit operand#2 flags][32 bit operand#2]
+[16 bit operation][8 bit operand#1 flags][8 bit operand#2 flags][32 bit operand#1][32 bit operand#2]
+Thus, every instruction has a size of 64 bits (8 bytes).
 
 The flag field contains the following bits:
 
@@ -22,9 +23,17 @@ The flag field contains the following bits:
 4: low short *
 3: high byte *
 2: low byte  *
+1 & 0: source size:
+	00: word
+	01: short
+	10: byte
 
 The register naming:
 (X = A, B, C or D)
+
+0: flags
+1: dereference
+2 & 3: operation size, minus one, in bytes
 
 -------------------------------------
 |                 X                 |
@@ -33,3 +42,18 @@ The register naming:
 |-----------------------------------|
 |  XHH   |  XHL   |  XLH   |  XLL   |
 -------------------------------------
+
+The memory is layed out as little endian.
+
+
+-------------
+Instructions:
+
+0x0000: NOP
+	Does nothing.
+0x0001: HALT
+	Stops the virtual machine.
+0x0002: INT
+	Interrupt call.
+0x0003: MOV
+	Moves memory from one adress/register to another.
