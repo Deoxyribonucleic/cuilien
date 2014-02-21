@@ -22,7 +22,7 @@ struct cpu_t
 struct cpu_operand
 {
 	c_byte flags;
-	c_byte* value_ptr;
+	c_word value;
 };
 
 struct cpu_instruction

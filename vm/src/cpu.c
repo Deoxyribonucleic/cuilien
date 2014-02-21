@@ -45,8 +45,8 @@ void cpu_read_instruction(cpu_handle cpu, c_addr address, struct cpu_instruction
 	output->operation = mem_read_short(cpu->memory, address, true);
 	output->op1.flags = mem_read_byte(cpu->memory, address + 2, true);
 	output->op2.flags = mem_read_byte(cpu->memory, address + 3, true);
-	//output->op1.value_ptr = address + 4;
-	//output->op2.value_ptr = address + 8;
+	output->op1.value = mem_read_long(cpu->memory, address + 4, true);
+	output->op2.value = mem_read_long(cpu->memory, address + 8, true);
 }
 
 

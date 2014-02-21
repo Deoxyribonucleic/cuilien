@@ -1,4 +1,5 @@
 Size definitions:
+
 -----------------------------
 |WORD, LONG, INT   | 32 bit |
 |------------------|--------|
@@ -43,11 +44,31 @@ The register naming:
 |  XHH   |  XHL   |  XLH   |  XLL   |
 -------------------------------------
 
+Memory
+-------------
+Every memory object consists of 2^32-1 bytes of potential virtual memory. However, no memory is actually allocated on the
+host machine until its page is accessed. A page is a continuous block of 1024 bytes, with which is associated 3 permission bits:
+read, write, and execute. The execution bit requires the read bit to be effective.
+
+When a process accesses (reads or writes) a memory address, the memory unit translates the virtual address to a "physical" one
+(of course, the "physical" address is also virtual on the host machine, in most cases) by calculating the page ID (floor(addr / page_size))
+and then finding the page information about that page in the page table. The page table contains entries for all the mapped pages - that is
+permission bits and physical address.
+
+If the addressed page is already mapped, the memory unit proceeds by validating permissions by comparing the page's permission bits to the
+permissions required by the operation (reading, writing, or reading+executing).
+
+If the addressed page is NOT mapped, the the memory unit's pagefault routine is called, which attempts to allocate a new page. As long as the
+host system has enough free memory and the operation doesn't mean exceeding the set memory limit, this operation shall be successful.
+Pages allocated by the pagefault routine always have all 3 permission bits set.
+
+This address translation currently has to be done for each byte accessed, in order to allow reading values across page boundaries. Caching and 
+the use of a hash table as page table could help to mitigate the performance hit caused by this, but neither are currently in use.
+
 The memory is layed out as little endian.
 
-
+Instructions
 -------------
-Instructions:
 
 0x0000: NOP
 	Does nothing.
