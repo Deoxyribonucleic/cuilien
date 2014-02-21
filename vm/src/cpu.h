@@ -22,13 +22,13 @@ struct cpu_t
 struct cpu_operand
 {
 	c_byte flags;
-	c_word value;
+	c_byte* value_ptr;
 };
 
 struct cpu_instruction
 {
 	c_short operation;
-	cpu_operand op1, op2;
+	struct cpu_operand op1, op2;
 };
 
 typedef struct cpu_t* cpu_handle;
@@ -37,7 +37,7 @@ typedef void (*cpu_function)(cpu_handle, c_byte* op1, c_byte* op2, size_t size);
 cpu_handle cpu_init(mem_handle memory);
 void cpu_free(cpu_handle cpu);
 
-void cpu_read_instruction(cpu_handle cpu, c_byte* address, cpu_instruction* output);
+void cpu_read_instruction(cpu_handle cpu, c_byte* address, struct cpu_instruction* output);
 c_byte* cpu_resolve_parameter(cpu_handle cpu, c_byte flags, c_word value);
 
 void cpu_write_parameter(cpu_handle cpu, c_byte flags, c_word value, c_byte* src, size_t size);

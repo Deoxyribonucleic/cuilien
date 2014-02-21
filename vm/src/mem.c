@@ -3,35 +3,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <memory.h>
 
-inline size_t mem_offset_for_endian(size_t size, size_t offset)
-{
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	// Little endian, so leave offset unchanged (since the memory we're writing is little endian, as well)
-	return offset;
-#else
-	// Big endian, so reverse offse
-	return size - offset - 1;
+#if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
+#error Cuilien requires that the host machine is little endian. This machine is not, and thus it cannot run Cuilien.
 #endif
-}
-
-void mem_read(c_byte* address, void* dest, size_t size)
-{
-	int offset = size;
-	while(offset --> 0)
-	{
-		*((c_byte*)dest + mem_offset_for_endian(size, offset)) = *(address + offset);
-	}
-}
-
-void mem_write(c_byte* address, void* src, size_t size)
-{
-	int offset = size;
-	while(offset --> 0)
-	{
-		*(address + offset) = *((c_byte*)src + mem_offset_for_endian(size, offset));
-	}
-}
 
 mem_handle mem_init(size_t size)
 {
@@ -65,14 +41,14 @@ c_addr mem_resolve_reverse(mem_handle memory, c_byte* address)
 c_long mem_read_long(c_byte* address)
 {
 	c_long data;
-	mem_read(address, &data, sizeof(c_long));
+	memcpy(&data, address, sizeof(c_long));
 	return data;
 }
 
 c_short mem_read_short(c_byte* address)
 {
 	c_short data;
-	mem_read(address, &data, sizeof(c_short));
+	memcpy(&data, address, sizeof(c_short));
 	return data;
 }
 
@@ -83,12 +59,12 @@ c_byte mem_read_byte(c_byte* address)
 
 void mem_write_long(c_byte* address, c_long data)
 {
-	mem_write(address, &data, sizeof(c_long));
+	memcpy(address, &data, sizeof(c_long));
 }
 
 void mem_write_short(c_byte* address, c_short data)
 {
-	mem_write(address, &data, sizeof(c_short));
+	memcpy(address, &data, sizeof(c_short));
 }
 
 void mem_write_byte(c_byte* address, c_byte data)

@@ -40,13 +40,13 @@ void cpu_free(cpu_handle cpu)
 		free(cpu);
 }
 
-void cpu_read_instruction(cpu_handle cpu, c_byte* address, cpu_instruction* output)
+void cpu_read_instruction(cpu_handle cpu, c_byte* address, struct cpu_instruction* output)
 {
 	output->operation = mem_read_short(address);
 	output->op1.flags = mem_read_byte(address + 2);
 	output->op2.flags = mem_read_byte(address + 3);
-	output->op1.value = mem_read_word(address + 4);
-	output->op2.value = mem_read_word(address + 8);
+	output->op1.value_ptr = address + 4;
+	output->op2.value_ptr = address + 8;
 }
 
 

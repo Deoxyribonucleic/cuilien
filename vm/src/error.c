@@ -1,6 +1,7 @@
 #include "error.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 int error_last = ERR_NONE;
 
@@ -31,4 +32,10 @@ void error_print(int code)
 inline void error_clear()
 {
 	error_last = ERR_NONE;
+}
+
+inline void fatal(const char* message)
+{
+	fprintf(stderr, "fatal error: %s\n", message);
+	abort();
 }
