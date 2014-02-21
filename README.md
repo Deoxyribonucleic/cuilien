@@ -2,4 +2,4 @@ Just a little experiment...
 
 Host requirements
 -----------
-* Must be little-endian.
+* Currently only supports litle-endian hosts.
