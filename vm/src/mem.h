@@ -7,27 +7,22 @@
 #include "page.h"
 #include "types.h"
 
-/*struct memory
+typedef struct memory
 {
-	page* page_table[2^];
-	size_t max_size;
+	vector_t page_table;
+	size_t max_size, used;
+} memory_t;
+typedef memory_t* mem_handle;
 
-	c_byte* data;
-};
-*/
-typedef c_byte* mem_handle;
+memory_t* mem_init(size_t size);
+void mem_free(memory_t* memory);
 
-mem_handle mem_init(size_t size);
-void mem_free(mem_handle memory);
-c_byte* mem_resolve(mem_handle memory, c_addr address);
-c_addr mem_resolve_reverse(mem_handle memory, c_byte* address);
+c_long mem_read_long(memory_t* memory, c_addr address, bool exec);
+c_short mem_read_short(memory_t* memory, c_addr address, bool exec);
+c_byte mem_read_byte(memory_t* memory, c_addr address, bool exec);
 
-c_long mem_read_long(c_byte* address);
-c_short mem_read_short(c_byte* address);
-c_byte mem_read_byte(c_byte* address);
-
-void mem_write_long(c_byte* address, c_long data);
-void mem_write_short(c_byte* address, c_short data);
-void mem_write_byte(c_byte* address, c_byte data);
+void mem_write_long(memory_t* memory, c_addr address, c_long data);
+void mem_write_short(memory_t* memory, c_addr address, c_short data);
+void mem_write_byte(memory_t* memory, c_addr address, c_byte data);
 
 #endif

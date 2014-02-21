@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-cpu_handle cpu_init(mem_handle memory)
+cpu_handle cpu_init(memory_t* memory)
 {
 	error_clear();
 
@@ -40,13 +40,13 @@ void cpu_free(cpu_handle cpu)
 		free(cpu);
 }
 
-void cpu_read_instruction(cpu_handle cpu, c_byte* address, struct cpu_instruction* output)
+void cpu_read_instruction(cpu_handle cpu, c_addr address, struct cpu_instruction* output)
 {
-	output->operation = mem_read_short(address);
-	output->op1.flags = mem_read_byte(address + 2);
-	output->op2.flags = mem_read_byte(address + 3);
-	output->op1.value_ptr = address + 4;
-	output->op2.value_ptr = address + 8;
+	output->operation = mem_read_short(cpu->memory, address, true);
+	output->op1.flags = mem_read_byte(cpu->memory, address + 2, true);
+	output->op2.flags = mem_read_byte(cpu->memory, address + 3, true);
+	//output->op1.value_ptr = address + 4;
+	//output->op2.value_ptr = address + 8;
 }
 
 

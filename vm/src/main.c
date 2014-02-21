@@ -7,6 +7,8 @@
 #include "cpu.h"
 #include "vector.h"
 
+#include <stdlib.h>
+
 void print_vector_info(vector_t* vector)
 {
 	printf("Element size: %d | Size: %d | Capacity: %d\n", vector->element_size, vector->size, vector->capacity);
@@ -23,29 +25,6 @@ void print_vector_info(vector_t* vector)
 
 int main(int argc, char** args)
 {
-	vector_t argv;
-	vector_create(sizeof(char*), 0, &argv);
-	print_vector_info(&argv);
-
-	int arg;
-	for(arg = 0; arg < argc; ++arg)
-	{
-		vector_push_back(&argv, &args[arg]);
-		print_vector_info(&argv);
-	}
-
-	char hello[] = "HELLO! :D";
-	char* hello_ptr = hello;
-	vector_insert(&argv, &hello_ptr, 2);
-	vector_insert(&argv, &hello_ptr, argv.size + 1);
-	print_vector_info(&argv);
-	vector_remove(&argv, 3);
-	print_vector_info(&argv);
-
-	vector_free(&argv);
-
-	return 0;
-
 	struct args_info arguments;
 	args_parse(args, argc, &arguments);
 
@@ -53,7 +32,7 @@ int main(int argc, char** args)
 
 	int error;
 
-	mem_handle memory = mem_init(0xfff);
+	memory_t* memory = mem_init(2050);
 	if(error_last)
 	{
 		error_print(error_last);
@@ -70,14 +49,26 @@ int main(int argc, char** args)
 	if(error = vm_init(&arguments))
 		error_print(error);
 
-	mem_read_long(mem_resolve(memory, 0x104));
+	//mem_read_long(mem_resolve(memory, 0x104));
 
-	c_long testVariable = 1337;
-	mem_write_long(mem_resolve(memory, 0x0666), testVariable);
-	c_long read1 = mem_read_long(mem_resolve(memory, 0x666));
-	c_short read2 = mem_read_short(mem_resolve(memory, 0x666));
+	page_info_t shared_info = { PAGE_WRITE, false };
+	c_byte* shared_mem = malloc(sizeof(c_byte) * C_PAGE_SIZE);
+	page_map(&memory->page_table, 0, &shared_info, shared_mem);
 
-	printf("Wrote: %d\nRead (long): %d\nRead (short): %d\n", testVariable, read1, read2);
+	c_long testVariable = 0x12345678;
+	mem_write_long(memory, 0x0666, testVariable);
+	c_long read1 = mem_read_long(memory, 0x0666, false);
+	c_short read2 = mem_read_short(memory, 0x0666, false);
+	c_short read3 = mem_read_short(memory, 500, false);
+	c_short read4 = mem_read_short(memory, 2050, false);
+	
+	free(shared_mem);
+
+	//mem_write_long(mem_resolve(&memory, 0x0666), testVariable);
+	//c_long read1 = mem_read_long(&mem_resolve(memory, 0x666));
+	//c_short read2 = mem_read_short(&mem_resolve(memory, 0x666));
+
+	printf("Wrote: %x\nRead (long): %x\nRead (short): %x\n", testVariable, read1, read2);
 
 	cpu_free(cpu);
 	mem_free(memory);

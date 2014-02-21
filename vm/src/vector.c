@@ -1,6 +1,7 @@
 #include "vector.h"
 #include "error.h"
 
+#include <assert.h>
 #include <memory.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -80,10 +81,7 @@ void vector_pop_back(vector_t* vector)
 
 void vector_insert(vector_t* vector, void* new_element, size_t at_index)
 {
-	if(at_index > vector->size)
-	{
-		fatal("vector insertion index exceeds last element by more than one");
-	}
+	assert(at_index <= vector->size);
 
 	void* old_data = vector->data;
 	size_t old_size = vector->size;
@@ -109,6 +107,8 @@ void vector_insert(vector_t* vector, void* new_element, size_t at_index)
 
 void vector_remove(vector_t* vector, size_t index)
 {
+	assert(index < vector->size);
+
 	void* old_data = vector->data;
 	size_t old_size = vector->size;
 
@@ -130,11 +130,13 @@ void vector_remove(vector_t* vector, size_t index)
 
 void vector_set(vector_t* vector, size_t index, void* element)
 {
+	assert(index < vector->size);
 	memcpy(vector_resolve(vector, index), element, vector->element_size);
 }
 
 void vector_get(vector_t* vector, size_t index, void* element_out)
 {
+	assert(index < vector->size);
 	memcpy(element_out, vector_resolve(vector, index), vector->element_size);
 }
 

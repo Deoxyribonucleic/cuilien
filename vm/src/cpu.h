@@ -16,7 +16,7 @@ struct cpu_t
 		c_word a, b, c, d, ip;
 	} reg;
 
-	mem_handle memory;
+	memory_t* memory;
 };
 
 struct cpu_operand
@@ -34,10 +34,10 @@ struct cpu_instruction
 typedef struct cpu_t* cpu_handle;
 typedef void (*cpu_function)(cpu_handle, c_byte* op1, c_byte* op2, size_t size);
 
-cpu_handle cpu_init(mem_handle memory);
+cpu_handle cpu_init(memory_t* memory);
 void cpu_free(cpu_handle cpu);
 
-void cpu_read_instruction(cpu_handle cpu, c_byte* address, struct cpu_instruction* output);
+void cpu_read_instruction(cpu_handle cpu, c_addr address, struct cpu_instruction* output);
 c_byte* cpu_resolve_parameter(cpu_handle cpu, c_byte flags, c_word value);
 
 void cpu_write_parameter(cpu_handle cpu, c_byte flags, c_word value, c_byte* src, size_t size);
