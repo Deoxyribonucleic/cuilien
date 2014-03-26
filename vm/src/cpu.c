@@ -1,11 +1,14 @@
 #include "cpu.h"
 #include "error.h"
+#include "instr.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 cpu_handle cpu_init(memory_t* memory)
 {
+	build_instruction_vector();
 	error_clear();
 
 	if(memory == NULL)
@@ -14,7 +17,7 @@ cpu_handle cpu_init(memory_t* memory)
 		return NULL;
 	}
 
-	cpu_handle cpu = malloc(sizeof(struct cpu_t));
+	cpu_handle cpu = malloc(sizeof(cpu_t));
 
 	if(cpu == NULL)
 	{
@@ -40,6 +43,14 @@ void cpu_free(cpu_handle cpu)
 		free(cpu);
 }
 
+void cpu_step(cpu_handle cpu)
+{
+	struct cpu_instruction instruction;
+	cpu_read_instruction(cpu, cpu->reg.ip, &instruction);
+	cpu_execute(cpu, &instruction);
+	cpu->reg.ip += INSTRUCTION_LENGTH;
+}
+
 void cpu_read_instruction(cpu_handle cpu, c_addr address, struct cpu_instruction* output)
 {
 	output->operation = mem_read_short(cpu->memory, address, true);
@@ -49,18 +60,12 @@ void cpu_read_instruction(cpu_handle cpu, c_addr address, struct cpu_instruction
 	output->op2.value = mem_read_long(cpu->memory, address + 8, true);
 }
 
-
-void cpu_write_parameter(cpu_handle cpu, c_byte flags, c_word value, c_byte* src, size_t size)
+void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction)
 {
-	if((flags & (PF_REGISTER | PF_DEREFERENCE)) == 0)
-	{
-		// Parameter is not an l-value and cannot be written to. Fail silently.
-		return;
-	}
+	assert(instruction->operation < INSTRUCTION_VECTOR_LENGTH);
+	assert(instruction_vector[instruction->operation] != 0);
 
-	if(flags & PF_REGISTER)
-	{
-		
-	}
+	instruction_vector[instruction->operation](cpu, &instruction->op1, &instruction->op2);
 }
+
 

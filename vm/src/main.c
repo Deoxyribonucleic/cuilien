@@ -49,26 +49,58 @@ int main(int argc, char** args)
 	if(error = vm_init(&arguments))
 		error_print(error);
 
-	//mem_read_long(mem_resolve(memory, 0x104));
+	//mem_read_short(mem_resolve(memory, 0x104));
 
 	page_info_t shared_info = { PAGE_WRITE, false };
 	c_byte* shared_mem = malloc(sizeof(c_byte) * C_PAGE_SIZE);
-	page_map(&memory->page_table, 0, &shared_info, shared_mem);
+	//page_map(&memory->page_table, 0, &shared_info, shared_mem);
 
-	c_long testVariable = 0x12345678;
-	mem_write_long(memory, 0x0666, testVariable);
-	c_long read1 = mem_read_long(memory, 0x0666, false);
-	c_short read2 = mem_read_short(memory, 0x0666, false);
-	c_short read3 = mem_read_short(memory, 500, false);
-	c_short read4 = mem_read_short(memory, 2050, false);
+	// Write test program into memory
+	c_addr programStart = 0xff000000;
+	mem_write_short(memory,	programStart+ 0, 0x0003);
+	mem_write_short(memory,	programStart+ 2, 0x8303);
+	mem_write_long(memory,	programStart+ 4, 0x00000001);
+	mem_write_long(memory,	programStart+ 8, 0x00000001);
+
+	mem_write_short(memory,	programStart+12, 0x0003);
+	mem_write_short(memory,	programStart+14, 0x8303);
+	mem_write_long(memory,	programStart+16, 0x00000002);
+	mem_write_long(memory,	programStart+20, 0x00000000);
+
+	mem_write_short(memory,	programStart+24, 0x0003);
+	mem_write_short(memory,	programStart+26, 0x9595);
+	mem_write_long(memory,	programStart+28, 0x00000002);
+	mem_write_long(memory, 	programStart+32, 0x00000001);
+
+	mem_write_short(memory,	programStart+36, 0x0003);
+	mem_write_short(memory,	programStart+38, 0x8343);
+	mem_write_long(memory,	programStart+40, 0x00000003);
+	mem_write_long(memory,	programStart+44, 0x00000666);
+
+	mem_write_short(memory,	programStart+48, 0x0000);
+	mem_write_short(memory,	programStart+50, 0x0000);
+	mem_write_long(memory,	programStart+52, 0x00000000);
+	mem_write_long(memory,	programStart+56, 0x00000000);
+
+	mem_write_short(memory,	programStart+60, 0x0002);
+	mem_write_short(memory,	programStart+62, 0x0000);
+	mem_write_long(memory,	programStart+64, 0x00000000);
+	mem_write_long(memory,	programStart+68, 0x00000000);
+
+	mem_write_short(memory,	programStart+72, 0x0001);
+	mem_write_short(memory,	programStart+74, 0x0000);
+	mem_write_long(memory,	programStart+76, 0x00000000);
+	mem_write_long(memory,	programStart+80, 0x00000000);
+
+	// Move instruction pointer to start of program and step through the 7 instructions
+	cpu->reg.ip = programStart;
+	int i;
+	for(i = 0; i<7; ++i)
+	{
+		cpu_step(cpu);
+	}
 	
 	free(shared_mem);
-
-	//mem_write_long(mem_resolve(&memory, 0x0666), testVariable);
-	//c_long read1 = mem_read_long(&mem_resolve(memory, 0x666));
-	//c_short read2 = mem_read_short(&mem_resolve(memory, 0x666));
-
-	printf("Wrote: %x\nRead (long): %x\nRead (short): %x\n", testVariable, read1, read2);
 
 	cpu_free(cpu);
 	mem_free(memory);

@@ -1,5 +1,5 @@
-bin: main.o args.o error.o vm.o mem.o cpu.o instr.o vector.o page.o
-	gcc main.o args.o error.o vm.o mem.o cpu.o instr.o vector.o page.o -g -o bin
+bin: main.o args.o error.o vm.o mem.o cpu.o instr.o vector.o page.o operand.o util.o
+	gcc main.o args.o error.o vm.o mem.o cpu.o instr.o vector.o page.o operand.o util.o -g -o bin
 
 main.o: main.c
 	gcc -g -c main.c
@@ -27,6 +27,12 @@ vector.o: vector.c
 
 page.o: page.c
 	gcc -g -c page.c
+
+operand.o: operand.c
+	gcc -g -c operand.c
+
+util.o: util.c
+	gcc -g -c util.c
 
 clean:
 	-rm *.o

@@ -50,7 +50,7 @@ void mem_pagefault(memory_t* memory, c_addr address)
 {
 	error_clear();
 
-	printf("[memory] pagefault: paging %d\n", PAGE_ALIGN(address));
+	printf("[memory] pagefault: paging 0x%08x\n", PAGE_ALIGN(address));
 
 	if(memory->used + C_PAGE_SIZE > memory->max_size)
 	{
