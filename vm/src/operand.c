@@ -37,6 +37,28 @@ c_word get_operand_register_value(cpu_t* cpu, operand_t const* op)
 	}
 }
 
+void set_operand_register_value(cpu_t* cpu, operand_t const* op, c_word value)
+{
+	printf("writing value of register %d...\n", op->value);
+
+	switch(op->value)
+	{
+	case OP_REG_A:
+		cpu->reg.a = value;
+		break;
+	case OP_REG_B:
+		cpu->reg.b = value;
+		break;
+	case OP_REG_C:
+		cpu->reg.c = value;
+		break;
+	case OP_REG_D:
+		cpu->reg.d = value;
+		break;
+	default:;
+	}
+}
+
 // Lets the compiler take care of any big-/ little endian issues
 inline void sized_copy_by_cast(void* dst, size_t dst_size, void const* src, size_t src_size)
 {	
@@ -121,15 +143,29 @@ void operand_read(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 	}
 }
 
-void write_register_pointer(cpu_t* cpu, operand_t const* op, c_byte* in, size_t size)
-{
-}
-
 c_word operand_read_value(cpu_t* cpu, operand_t const* op)
 {
 	c_word value = 0;
 	operand_read(cpu, op, (c_byte*)&value, operand_get_size(op));
 	return value;
+}
+
+void write_register_pointer(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
+{
+	c_addr pointer = get_operand_register_value(cpu, op);
+	mem_write_value(cpu->memory, pointer, data, size);
+}
+
+void write_register(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
+{
+	c_word value;
+	sized_copy_by_cast(&value, sizeof(value), data, size);
+	set_operand_register_value(cpu, op, value);
+}
+
+void write_value_pointer(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
+{
+	mem_write_value(cpu->memory, op->value, data, size);
 }
 
 void operand_write(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
@@ -141,21 +177,26 @@ void operand_write(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t s
 	if(op->flags & PF_REGISTER && op->flags & PF_DEREFERENCE)
 	{
 		printf("REG|REF\n");
-		read_register_pointer(cpu, op, out, size);
+		write_register_pointer(cpu, op, data, size);
 	}
 	else if(op->flags & PF_REGISTER)
 	{
 		printf("REG\n");
-		read_register(cpu, op, out, size);
+		write_register(cpu, op, data, size);
 	}
 	else if(op->flags & PF_DEREFERENCE)
 	{
 		printf("REF\n");
-		read_value_pointer(cpu, op, out, size);
+		write_value_pointer(cpu, op, data, size);
 	}
 	else
 	{
 		printf("VAL\n");
 		printf("(not an l-value)\n");
 	}
+}
+
+void operand_write_value(cpu_t* cpu, operand_t const* op, c_word value)
+{
+	operand_write(cpu, op, (c_byte*)&value, operand_get_size(op));
 }

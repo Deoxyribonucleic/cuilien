@@ -26,6 +26,6 @@ void mem_write_short(memory_t* memory, c_addr address, c_short data);
 void mem_write_byte(memory_t* memory, c_addr address, c_byte data);
 
 void mem_read_value(memory_t* memory, c_addr address, c_byte* out, size_t length, bool exec);
-void mem_write_value(memory_t* memory, c_addr address, c_byte* value, size_t length);
+void mem_write_value(memory_t* memory, c_addr address, c_byte const* value, size_t length);
 
 #endif

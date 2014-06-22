@@ -32,6 +32,6 @@ void operand_read(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size);
 void operand_write(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size);
 
 c_word operand_read_value(cpu_t* cpu, operand_t const* op);
-c_word operand_write_value(cpu_t* cpu, operand_t const* op, c_word value);
+void operand_write_value(cpu_t* cpu, operand_t const* op, c_word value);
 
 #endif

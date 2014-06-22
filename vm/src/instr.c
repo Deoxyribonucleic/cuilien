@@ -26,11 +26,16 @@ void MOV(cpu_t* cpu, operand_t const* dest, operand_t const* src)
 {
 	printf("MOV\n");
 	
-	c_word dst_val = operand_read_value(cpu, dest);
 	c_word src_val = operand_read_value(cpu, src);
-	
-	printf("dst_val: %d\n", dst_val);
-	printf("src_val: %d\n", src_val);
+	c_word dst_val = operand_read_value(cpu, dest);
+
+	operand_write_value(cpu, dest, src_val);
+
+	c_word dst_val_new = operand_read_value(cpu, dest);
+
+	printf("dst_val: 0x%08X\n", dst_val);
+	printf("src_val: 0x%08X\n", src_val);
+	printf("dst_val_new: 0x%08X\n", dst_val_new);
 }
 
 void build_instruction_vector()

@@ -123,7 +123,7 @@ void mem_read_value(memory_t* memory, c_addr address, c_byte* out, size_t length
 #endif
 }
 
-void mem_write_value(memory_t* memory, c_addr address, c_byte* value, size_t length)
+void mem_write_value(memory_t* memory, c_addr address, c_byte const* value, size_t length)
 {
 	error_clear();
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__

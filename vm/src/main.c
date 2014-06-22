@@ -73,7 +73,7 @@ int main(int argc, char** args)
 	mem_write_long(memory, 	programStart+32, 0x00000001);
 
 	mem_write_short(memory,	programStart+36, 0x0003);
-	mem_write_short(memory,	programStart+38, 0x070B);
+	mem_write_short(memory,	programStart+38, 0x050B);
 	mem_write_long(memory,	programStart+40, 0x00000003);
 	mem_write_long(memory,	programStart+44, 0x00000666);
 
@@ -108,6 +108,7 @@ int main(int argc, char** args)
 	for(i = 0; i<7; ++i)
 	{
 		cpu_step(cpu);
+		printf("--\n");
 	}
 	
 	free(shared_mem);
