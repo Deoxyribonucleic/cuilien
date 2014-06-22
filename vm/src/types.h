@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-typedef uint32_t c_word, c_int, c_long, c_addr;
+typedef uint32_t c_word, c_int, c_long, c_addr, c_reg;
 typedef int32_t c_sword, c_sint, c_slong;
 typedef uint16_t c_short;
 typedef int16_t c_sshort;

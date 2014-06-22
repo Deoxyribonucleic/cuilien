@@ -10,7 +10,7 @@ typedef struct cpu
 {
 	struct
 	{
-		c_word a, b, c, d, ip;
+		c_reg a, b, c, d, ip;
 	} reg;
 
 	memory_t* memory;

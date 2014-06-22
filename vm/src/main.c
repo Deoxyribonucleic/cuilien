@@ -58,29 +58,29 @@ int main(int argc, char** args)
 	// Write test program into memory
 	c_addr programStart = 0xff000000;
 	mem_write_short(memory,	programStart+ 0, 0x0003);
-	mem_write_short(memory,	programStart+ 2, 0x8303);
+	mem_write_short(memory,	programStart+ 2, 0x030B);
 	mem_write_long(memory,	programStart+ 4, 0x00000001);
 	mem_write_long(memory,	programStart+ 8, 0x00000001);
 
 	mem_write_short(memory,	programStart+12, 0x0003);
-	mem_write_short(memory,	programStart+14, 0x8303);
+	mem_write_short(memory,	programStart+14, 0x030B);
 	mem_write_long(memory,	programStart+16, 0x00000002);
 	mem_write_long(memory,	programStart+20, 0x00000000);
 
 	mem_write_short(memory,	programStart+24, 0x0003);
-	mem_write_short(memory,	programStart+26, 0x9595);
+	mem_write_short(memory,	programStart+26, 0x0B0B);
 	mem_write_long(memory,	programStart+28, 0x00000002);
 	mem_write_long(memory, 	programStart+32, 0x00000001);
 
 	mem_write_short(memory,	programStart+36, 0x0003);
-	mem_write_short(memory,	programStart+38, 0x8343);
+	mem_write_short(memory,	programStart+38, 0x070B);
 	mem_write_long(memory,	programStart+40, 0x00000003);
 	mem_write_long(memory,	programStart+44, 0x00000666);
 
-	mem_write_short(memory,	programStart+48, 0x0000);
-	mem_write_short(memory,	programStart+50, 0x0000);
-	mem_write_long(memory,	programStart+52, 0x00000000);
-	mem_write_long(memory,	programStart+56, 0x00000000);
+	mem_write_short(memory,	programStart+48, 0x0003);
+	mem_write_short(memory,	programStart+50, 0x0F0B);
+	mem_write_long(memory,	programStart+52, 0x00000001);
+	mem_write_long(memory,	programStart+56, 0x00000003);
 
 	mem_write_short(memory,	programStart+60, 0x0002);
 	mem_write_short(memory,	programStart+62, 0x0000);
@@ -91,6 +91,16 @@ int main(int argc, char** args)
 	mem_write_short(memory,	programStart+74, 0x0000);
 	mem_write_long(memory,	programStart+76, 0x00000000);
 	mem_write_long(memory,	programStart+80, 0x00000000);
+	
+	// Write some fun data to play with
+	mem_write_long(memory, 0x666, 1337);
+	mem_write_long(memory, 1337, 0xdeadbeef);
+	
+	// Initialize registers to identifiable values
+	cpu->reg.a = 1000;
+	cpu->reg.b = 2000;
+	cpu->reg.c = 3000;
+	cpu->reg.d = 4000;
 
 	// Move instruction pointer to start of program and step through the 7 instructions
 	cpu->reg.ip = programStart;

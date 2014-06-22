@@ -37,70 +37,125 @@ c_word get_operand_register_value(cpu_t* cpu, operand_t const* op)
 	}
 }
 
-// I'm thinking the compiler should handle taking care of little/big endian problems here, yes?
-inline void sized_copy_by_cast(void* dest, void* src, size_t size)
-{
-	c_word value = get_operand_register_value(cpu, op);
-
-	switch(size)
+// Lets the compiler take care of any big-/ little endian issues
+inline void sized_copy_by_cast(void* dst, size_t dst_size, void const* src, size_t src_size)
+{	
+	c_word value;
+	
+	switch(src_size)
 	{
 	case 1:
-		*(c_byte)dest = *(c_byte)src;
+		value = *(c_byte*)src;
+		break;
+	case 2:
+		value = *(c_short*)src;
+		break;
+	case 4:
+		value = *(c_word*)src;
+		break;
+	default:;
+	}
+	
+	switch(dst_size)
+	{
+	case 1:
+		*(c_byte*)dst = value;
 		return;
 	case 2:
-		*(c_short)dest = *(c_short)src;
+		*(c_short*)dst = value;
 		return;
 	case 4:
-		*(c_word)dest = *(c_word)src;
+		*(c_word*)dst = value;
 		return;
-	default:
+	default:;
 	}
 }
 
 void read_register_pointer(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 {
 	c_addr pointer = get_operand_register_value(cpu, op);
-	mem_read_value(cpu->memory, pointer, out, size);
+	mem_read_value(cpu->memory, pointer, out, size, false);
 }
 
 void read_register(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 {
 	c_word value = get_operand_register_value(cpu, op);
-	sized_copy_by_cast(out, &value, size);
+	sized_copy_by_cast(out, size, &value, size);
 }
 
 void read_value_pointer(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 {
-	mem_read_value(cpu->memory, op->value, out, size);
+	mem_read_value(cpu->memory, op->value, out, size, false);
 }
 
 void read_value(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 {
-	sized_copy_by_cast(out, &op->value, size);
+	sized_copy_by_cast(out, size, &op->value, size);
 }
 
 void operand_read(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 {
 	error_clear();
 
+	printf("flags: %d\n", op->flags);
+	
 	if(op->flags & PF_REGISTER && op->flags & PF_DEREFERENCE)
 	{
+		printf("REG|REF\n");
 		read_register_pointer(cpu, op, out, size);
 	}
 	else if(op->flags & PF_REGISTER)
 	{
+		printf("REG\n");
 		read_register(cpu, op, out, size);
 	}
 	else if(op->flags & PF_DEREFERENCE)
 	{
+		printf("REF\n");
 		read_value_pointer(cpu, op, out, size);
 	}
 	else
 	{
+		printf("VAL\n");
 		read_value(cpu, op, out, size);
 	}
 }
 
 void write_register_pointer(cpu_t* cpu, operand_t const* op, c_byte* in, size_t size)
 {
+}
+
+c_word operand_read_value(cpu_t* cpu, operand_t const* op)
+{
+	c_word value = 0;
+	operand_read(cpu, op, (c_byte*)&value, operand_get_size(op));
+	return value;
+}
+
+void operand_write(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
+{
+	error_clear();
+
+	printf("flags: %d\n", op->flags);
+	
+	if(op->flags & PF_REGISTER && op->flags & PF_DEREFERENCE)
+	{
+		printf("REG|REF\n");
+		read_register_pointer(cpu, op, out, size);
+	}
+	else if(op->flags & PF_REGISTER)
+	{
+		printf("REG\n");
+		read_register(cpu, op, out, size);
+	}
+	else if(op->flags & PF_DEREFERENCE)
+	{
+		printf("REF\n");
+		read_value_pointer(cpu, op, out, size);
+	}
+	else
+	{
+		printf("VAL\n");
+		printf("(not an l-value)\n");
+	}
 }
