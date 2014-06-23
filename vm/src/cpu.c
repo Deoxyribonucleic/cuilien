@@ -67,5 +67,3 @@ void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction)
 
 	instruction_vector[instruction->operation](cpu, &instruction->op1, &instruction->op2);
 }
-
-
