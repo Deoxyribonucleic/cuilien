@@ -14,14 +14,17 @@ void NOP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
 	printf("NOP\n");
 }
+
 void HALT(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
 	printf("HALT\n");
 }
+
 void INT(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
 	printf("INT\n");
 }
+
 void MOV(cpu_t* cpu, operand_t const* dest, operand_t const* src)
 {
 	printf("MOV\n");
@@ -33,9 +36,42 @@ void MOV(cpu_t* cpu, operand_t const* dest, operand_t const* src)
 
 	c_word dst_val_new = operand_read_value(cpu, dest);
 
-	printf("dst_val: 0x%08X\n", dst_val);
-	printf("src_val: 0x%08X\n", src_val);
-	printf("dst_val_new: 0x%08X\n", dst_val_new);
+	// printf("dst_val: 0x%08X\n", dst_val);
+	// printf("src_val: 0x%08X\n", src_val);
+	// printf("dst_val_new: 0x%08X\n", dst_val_new);
+}
+
+void INC(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
+{
+	printf("INC\n");
+	c_word value = operand_read_value(cpu, operand);
+	operand_write_value(cpu, operand, value+1);
+}
+
+void DEC(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
+{
+	printf("DEC\n");
+	c_word value = operand_read_value(cpu, operand);
+	operand_write_value(cpu, operand, value-1);
+}
+
+void SHOW(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
+{
+	printf("SHOW\n");
+	c_word value = operand_read_value(cpu, operand);
+
+	switch(operand_get_size(operand))
+	{
+	case 1:
+		printf("value (byte): %02x\n", value);
+		break;
+	case 2:
+		printf("value (short): %04x\n", value);
+		break;
+	case 4:
+		printf("value (long): %08x\n", value);
+		break;
+	}
 }
 
 void build_instruction_vector()
@@ -50,6 +86,11 @@ void build_instruction_vector()
 	set[INSTR_HALT]	= HALT;
 	set[INSTR_INT]	= INT;
 	set[INSTR_MOV]	= MOV;
+
+	set[INSTR_INC]	= INC;
+	set[INSTR_DEC]	= DEC;
+
+	set[INSTR_SHOW]	= SHOW;
 
 	instruction_vector_built = true;
 }
