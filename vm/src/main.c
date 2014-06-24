@@ -8,6 +8,9 @@
 #include "vector.h"
 
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 void print_vector_info(vector_t* vector)
 {
@@ -32,7 +35,7 @@ int main(int argc, char** args)
 
 	int error;
 
-	memory_t* memory = mem_init(2050);
+	memory_t* memory = mem_init(4096);
 	if(error_last)
 	{
 		error_print(error_last);
@@ -55,42 +58,32 @@ int main(int argc, char** args)
 	c_byte* shared_mem = malloc(sizeof(c_byte) * C_PAGE_SIZE);
 	//page_map(&memory->page_table, 0, &shared_info, shared_mem);
 
-	// Write test program into memory
+	// Load test program into memory
 	c_addr programStart = 0xff000000;
-	mem_write_short(memory,	programStart+ 0, 0x0003);
-	mem_write_short(memory,	programStart+ 2, 0x030B);
-	mem_write_long(memory,	programStart+ 4, 0x00000001);
-	mem_write_long(memory,	programStart+ 8, 0x00000001);
 
-	mem_write_short(memory,	programStart+12, 0x0003);
-	mem_write_short(memory,	programStart+14, 0x030B);
-	mem_write_long(memory,	programStart+16, 0x00000002);
-	mem_write_long(memory,	programStart+20, 0x00000000);
+	int file = open(arguments.program, O_RDONLY);
 
-	mem_write_short(memory,	programStart+24, 0x0003);
-	mem_write_short(memory,	programStart+26, 0x0B0B);
-	mem_write_long(memory,	programStart+28, 0x00000002);
-	mem_write_long(memory, 	programStart+32, 0x00000001);
+	if(file < 0)
+	{
+		printf("File not found.\n");
+		return 1;
+	}
 
-	mem_write_short(memory,	programStart+36, 0x0003);
-	mem_write_short(memory,	programStart+38, 0x050B);
-	mem_write_long(memory,	programStart+40, 0x00000003);
-	mem_write_long(memory,	programStart+44, 0x00000666);
+	c_byte buffer[256];
+	ssize_t chunk_length;
+	size_t bytes_written = 0;
+	while((chunk_length = read(file, buffer, 256)) > 0)
+	{
+		int i;
+		for(i=0; i<chunk_length; ++i)
+		{
+			mem_write_byte(memory, programStart + bytes_written, buffer[i]);
+			++bytes_written;
+		}
+	}
 
-	mem_write_short(memory,	programStart+48, 0x0003);
-	mem_write_short(memory,	programStart+50, 0x0F0B);
-	mem_write_long(memory,	programStart+52, 0x00000001);
-	mem_write_long(memory,	programStart+56, 0x00000003);
+	close(file);
 
-	mem_write_short(memory,	programStart+60, 0x0002);
-	mem_write_short(memory,	programStart+62, 0x0000);
-	mem_write_long(memory,	programStart+64, 0x00000000);
-	mem_write_long(memory,	programStart+68, 0x00000000);
-
-	mem_write_short(memory,	programStart+72, 0x0001);
-	mem_write_short(memory,	programStart+74, 0x0000);
-	mem_write_long(memory,	programStart+76, 0x00000000);
-	mem_write_long(memory,	programStart+80, 0x00000000);
 	
 	// Write some fun data to play with
 	mem_write_long(memory, 0x666, 1337);
@@ -105,7 +98,7 @@ int main(int argc, char** args)
 	// Move instruction pointer to start of program and step through the 7 instructions
 	cpu->reg.ip = programStart;
 	int i;
-	for(i = 0; i<7; ++i)
+	for(i = 0; i<20; ++i)
 	{
 		cpu_step(cpu);
 		printf("--\n");

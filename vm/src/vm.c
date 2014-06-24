@@ -5,5 +5,5 @@
 
 int vm_init(struct args_info* args)
 {
-	return ERR_VM_FNF;
+	return 0;
 }
