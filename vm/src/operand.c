@@ -20,8 +20,6 @@ size_t operand_get_operation_size(operand_t const* op1, operand_t const* op2)
 
 c_word get_operand_register_value(cpu_t* cpu, operand_t const* op)
 {
-	printf("reading value of register %d...\n", op->value);
-
 	switch(op->value)
 	{
 	case OP_REG_A:
@@ -39,8 +37,6 @@ c_word get_operand_register_value(cpu_t* cpu, operand_t const* op)
 
 void set_operand_register_value(cpu_t* cpu, operand_t const* op, c_word value)
 {
-	printf("writing value of register %d...\n", op->value);
-
 	switch(op->value)
 	{
 	case OP_REG_A:
@@ -118,27 +114,21 @@ void read_value(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 void operand_read(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 {
 	error_clear();
-
-	printf("flags: %d\n", op->flags);
 	
 	if(op->flags & PF_REGISTER && op->flags & PF_DEREFERENCE)
 	{
-		printf("REG|REF\n");
 		read_register_pointer(cpu, op, out, size);
 	}
 	else if(op->flags & PF_REGISTER)
 	{
-		printf("REG\n");
 		read_register(cpu, op, out, size);
 	}
 	else if(op->flags & PF_DEREFERENCE)
 	{
-		printf("REF\n");
 		read_value_pointer(cpu, op, out, size);
 	}
 	else
 	{
-		printf("VAL\n");
 		read_value(cpu, op, out, size);
 	}
 }
@@ -171,27 +161,21 @@ void write_value_pointer(cpu_t* cpu, operand_t const* op, c_byte const* data, si
 void operand_write(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
 {
 	error_clear();
-
-	printf("flags: %d\n", op->flags);
 	
 	if(op->flags & PF_REGISTER && op->flags & PF_DEREFERENCE)
 	{
-		printf("REG|REF\n");
 		write_register_pointer(cpu, op, data, size);
 	}
 	else if(op->flags & PF_REGISTER)
 	{
-		printf("REG\n");
 		write_register(cpu, op, data, size);
 	}
 	else if(op->flags & PF_DEREFERENCE)
 	{
-		printf("REF\n");
 		write_value_pointer(cpu, op, data, size);
 	}
 	else
 	{
-		printf("VAL\n");
 		printf("(not an l-value)\n");
 	}
 }
