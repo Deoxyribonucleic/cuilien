@@ -10,6 +10,11 @@
 #define INSTR_INC	0x0005
 #define INSTR_DEC	0x0006
 
+#define INSTR_ADD	0x000A
+#define INSTR_SUB	0x000B
+#define INSTR_MUL	0x000C
+#define INSTR_DIV	0x000D
+
 #define INSTR_SHOW	0x0010
 
 

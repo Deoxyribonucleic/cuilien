@@ -1,0 +1,12 @@
+mov a, 0
+mov b, 1337
+add b, 3
+show b
+mov c, 5
+mul c, 3
+show c
+sub b, c
+show b
+div b, 13
+show b
+show a

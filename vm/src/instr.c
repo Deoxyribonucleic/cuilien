@@ -55,6 +55,47 @@ void DEC(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 	operand_write_value(cpu, operand, value-1);
 }
 
+void ADD(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
+{
+	printf("ADD\n");
+	
+	c_word op2_val = operand_read_value(cpu, op2);
+	c_word op1_val = operand_read_value(cpu, op1);
+
+	operand_write_value(cpu, op1, op1_val + op2_val);
+}
+
+void SUB(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
+{
+	printf("SUB\n");
+	
+	c_word op2_val = operand_read_value(cpu, op2);
+	c_word op1_val = operand_read_value(cpu, op1);
+
+	operand_write_value(cpu, op1, op1_val - op2_val);
+}
+
+void MUL(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
+{
+	printf("MUL\n");
+	
+	c_word op2_val = operand_read_value(cpu, op2);
+	c_word op1_val = operand_read_value(cpu, op1);
+
+	operand_write_value(cpu, op1, op1_val * op2_val);
+}
+
+void DIV(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
+{
+	printf("DIV\n");
+	
+	c_word op2_val = operand_read_value(cpu, op2);
+	c_word op1_val = operand_read_value(cpu, op1);
+
+	operand_write_value(cpu, op1, (c_word)(op1_val / op2_val));
+	cpu->reg.a = op1_val % op2_val;
+}
+
 void SHOW(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
 	printf("SHOW\n");
@@ -89,6 +130,11 @@ void build_instruction_vector()
 
 	set[INSTR_INC]	= INC;
 	set[INSTR_DEC]	= DEC;
+
+	set[INSTR_ADD]	= ADD;
+	set[INSTR_SUB]	= SUB;
+	set[INSTR_MUL]	= MUL;
+	set[INSTR_DIV]	= DIV;
 
 	set[INSTR_SHOW]	= SHOW;
 
