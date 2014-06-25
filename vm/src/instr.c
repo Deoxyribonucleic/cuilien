@@ -41,6 +41,12 @@ void MOV(cpu_t* cpu, operand_t const* dest, operand_t const* src)
 	// printf("dst_val_new: 0x%08X\n", dst_val_new);
 }
 
+void JMP(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
+{
+	printf("JMP\n");
+	cpu->reg.ip = operand_read_value(cpu, operand);
+}
+
 void INC(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
 	printf("INC\n");
@@ -115,6 +121,46 @@ void SHOW(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 	}
 }
 
+void TEST(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
+{
+	printf("TEST\n");
+	c_word value = operand_read_value(cpu, operand);
+
+	cpu->reg.flags = 0;
+
+	if(value == 0)
+	{
+		cpu_set_flag(cpu, FLAG_ZERO);
+	}
+	else
+	{
+		cpu_set_flag(cpu, FLAG_GT);
+	}
+}
+
+void CMP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
+{
+	printf("CMP\n");
+	c_word value1 = operand_read_value(cpu, op1);
+	c_word value2 = operand_read_value(cpu, op2);
+
+	cpu->reg.flags = 0;
+
+	if(value1 == value2)
+	{
+		cpu_set_flag(cpu, FLAG_EQUAL);
+	}
+	else if(value1 > value2)
+	{
+		cpu_set_flag(cpu, FLAG_GT);
+	}
+	else
+	{
+		cpu_set_flag(cpu, FLAG_LT);
+	}
+}
+
+
 void build_instruction_vector()
 {
 	if(instruction_vector_built)
@@ -137,6 +183,9 @@ void build_instruction_vector()
 	set[INSTR_DIV]	= DIV;
 
 	set[INSTR_SHOW]	= SHOW;
+
+	set[INSTR_CMP]	= CMP;
+	set[INSTR_TEST]	= TEST;
 
 	instruction_vector_built = true;
 }

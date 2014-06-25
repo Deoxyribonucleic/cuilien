@@ -48,8 +48,8 @@ void cpu_step(cpu_handle cpu)
 {
 	struct cpu_instruction instruction;
 	cpu_read_instruction(cpu, cpu->reg.ip, &instruction);
-	cpu_execute(cpu, &instruction);
 	cpu->reg.ip += INSTRUCTION_LENGTH;
+	cpu_execute(cpu, &instruction);
 }
 
 void cpu_read_instruction(cpu_handle cpu, c_addr address, struct cpu_instruction* output)
