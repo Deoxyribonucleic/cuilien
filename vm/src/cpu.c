@@ -31,6 +31,7 @@ cpu_handle cpu_init(memory_t* memory)
 	cpu->reg.d = 0;
 
 	cpu->reg.ip = 0;
+	cpu->reg.flags = 0;
 
 	cpu->memory = memory;
 
@@ -66,4 +67,19 @@ void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction)
 	assert(instruction_vector[instruction->operation] != 0);
 
 	instruction_vector[instruction->operation](cpu, &instruction->op1, &instruction->op2);
+}
+
+bool cpu_get_flag(cpu_handle cpu, int flag)
+{
+	return cpu->reg.flags & flag;
+}
+
+void cpu_set_flag(cpu_handle cpu, int flag)
+{
+	cpu->reg.flags |= flag;
+}
+
+void cpu_clear_flag(cpu_handle cpu, int flag)
+{
+	cpu->reg.flags &= ~flag;
 }

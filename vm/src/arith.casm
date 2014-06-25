@@ -10,3 +10,9 @@ show b
 div b, 13
 show b
 show a
+
+mov a, 0xDEADBEEF
+mov short a, 0xBEEF1337
+show a
+
+halt
