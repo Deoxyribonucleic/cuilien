@@ -13,10 +13,12 @@
 #define PF_SIZE_SHORT	1
 #define PF_SIZE_BYTE	0
 
-#define OP_REG_A	1
-#define OP_REG_B	2
-#define OP_REG_C	3
-#define OP_REG_D	4
+#define OP_REG_A		1
+#define OP_REG_B		2
+#define OP_REG_C		3
+#define OP_REG_D		4
+#define OP_REG_IP		5
+#define OP_REG_FLAGS	6
 
 typedef struct operand
 {
