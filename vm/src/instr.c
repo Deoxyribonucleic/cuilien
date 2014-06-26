@@ -44,7 +44,7 @@ void MOV(cpu_t* cpu, operand_t const* dest, operand_t const* src)
 void JMP(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
 	printf("JMP\n");
-	cpu->reg.ip = operand_read_value(cpu, operand);
+	cpu_jump(cpu, operand_read_value(cpu, operand));
 }
 
 void INC(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
@@ -160,6 +160,50 @@ void CMP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 	}
 }
 
+void JZ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
+{
+	printf("JZ\n");
+	c_word target = operand_read_value(cpu, target_operand);
+
+	if(cpu_get_flag(cpu, FLAG_ZERO))
+	{
+		cpu_jump(cpu, target);
+	}
+}
+
+void JNZ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
+{
+	printf("JNZ\n");
+	c_word target = operand_read_value(cpu, target_operand);
+
+	if(!cpu_get_flag(cpu, FLAG_ZERO))
+	{
+		cpu_jump(cpu, target);
+	}
+}
+
+void JEQ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
+{
+	printf("JEQ\n");
+	c_word target = operand_read_value(cpu, target_operand);
+
+	if(cpu_get_flag(cpu, FLAG_EQUAL))
+	{
+		cpu_jump(cpu, target);
+	}
+}
+
+void JNEQ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
+{
+	printf("JNEQ\n");
+	c_word target = operand_read_value(cpu, target_operand);
+
+	if(!cpu_get_flag(cpu, FLAG_EQUAL))
+	{
+		cpu_jump(cpu, target);
+	}
+}
+
 
 void build_instruction_vector()
 {
@@ -174,6 +218,8 @@ void build_instruction_vector()
 	set[INSTR_INT]	= INT;
 	set[INSTR_MOV]	= MOV;
 
+	set[INSTR_JMP]	= JMP;
+
 	set[INSTR_INC]	= INC;
 	set[INSTR_DEC]	= DEC;
 
@@ -186,6 +232,12 @@ void build_instruction_vector()
 
 	set[INSTR_CMP]	= CMP;
 	set[INSTR_TEST]	= TEST;
+
+
+	set[INSTR_JZ]	= JZ;
+	set[INSTR_JNZ]	= JNZ;
+	set[INSTR_JEQ]	= JEQ;
+	set[INSTR_JNEQ]	= JNEQ;
 
 	instruction_vector_built = true;
 }

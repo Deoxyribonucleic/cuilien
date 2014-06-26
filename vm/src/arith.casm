@@ -12,6 +12,7 @@ show b
 show a
 
 cmp a, 12
+show 0x11111111
 show flags
 
 mov a, 0xDEADBEEF

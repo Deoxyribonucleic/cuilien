@@ -83,3 +83,9 @@ void cpu_clear_flag(cpu_handle cpu, int flag)
 {
 	cpu->reg.flags &= ~flag;
 }
+
+void cpu_jump(cpu_handle cpu, c_addr target)
+{
+	printf("control flow: 0x%08x => 0x%08x\n", cpu->reg.ip, target);
+	cpu->reg.ip = target;
+}

@@ -41,6 +41,8 @@ bool cpu_get_flag(cpu_handle cpu, int flag);
 void cpu_set_flag(cpu_handle cpu, int flag);
 void cpu_clear_flag(cpu_handle cpu, int flag);
 
+void cpu_jump(cpu_handle cpu, c_addr target);
+
 // Deprecated:
 /*c_byte* cpu_resolve_parameter(cpu_handle cpu, c_byte flags, c_word value);
 void cpu_write_parameter(cpu_handle cpu, c_byte flags, c_word value, c_byte* src, size_t size);
