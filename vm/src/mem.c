@@ -207,4 +207,5 @@ size_t mem_load_file(mem_handle memory, char const* filename, c_addr start)
 	}
 
 	close(file);
+	return bytes_written;
 }
