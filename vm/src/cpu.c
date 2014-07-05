@@ -1,6 +1,7 @@
 #include "cpu.h"
 #include "error.h"
 #include "instr.h"
+#include "debug.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -92,7 +93,7 @@ void cpu_clear_flag(cpu_handle cpu, int flag)
 
 void cpu_jump(cpu_handle cpu, c_addr target)
 {
-	printf("control flow: 0x%08x => 0x%08x\n", cpu->reg.ip, target);
+	//printf("control flow: 0x%08x => 0x%08x\n", cpu->reg.ip, target);
 	cpu->reg.ip = target;
 }
 
@@ -140,7 +141,7 @@ c_byte cpu_pop_byte(cpu_handle cpu)
 
 void cpu_call(cpu_handle cpu, c_addr subroutine)
 {
-	printf("calling subroutine at 0x%08x\n", subroutine);
+	DEBUG_PRINTF("calling subroutine at 0x%08x\n", subroutine);
 	cpu_push_long(cpu, cpu->reg.ip);
 	cpu_jump(cpu, subroutine);
 }
@@ -148,6 +149,6 @@ void cpu_call(cpu_handle cpu, c_addr subroutine)
 void cpu_return(cpu_handle cpu)
 {
 	c_addr return_address = cpu_pop_long(cpu);
-	printf("returning from subroutine to 0x%08x\n", return_address);
+	DEBUG_PRINTF("returning from subroutine to 0x%08x\n", return_address);
 	cpu_jump(cpu, return_address);
 }

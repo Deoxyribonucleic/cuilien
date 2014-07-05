@@ -2,6 +2,7 @@
 
 #include "cpu.h"
 #include "operand.h"
+#include "debug.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,23 +13,23 @@ bool instruction_vector_built = false;
 
 void NOP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
-	printf("NOP\n");
+	DEBUG_PRINTF("NOP\n");
 }
 
 void HALT(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
-	printf("HALT\n");
+	DEBUG_PRINTF("HALT\n");
 	cpu->halted = true;
 }
 
 void INT(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
-	printf("INT\n");
+	DEBUG_PRINTF("INT\n");
 }
 
 void MOV(cpu_t* cpu, operand_t const* dest, operand_t const* src)
 {
-	printf("MOV\n");
+	DEBUG_PRINTF("MOV\n");
 
 	c_word src_val = operand_read_value(cpu, src);
 	c_word dst_val = operand_read_value(cpu, dest);
@@ -36,35 +37,31 @@ void MOV(cpu_t* cpu, operand_t const* dest, operand_t const* src)
 	operand_write_value(cpu, dest, src_val);
 
 	c_word dst_val_new = operand_read_value(cpu, dest);
-
-	// printf("dst_val: 0x%08X\n", dst_val);
-	// printf("src_val: 0x%08X\n", src_val);
-	// printf("dst_val_new: 0x%08X\n", dst_val_new);
 }
 
 void JMP(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("JMP\n");
+	DEBUG_PRINTF("JMP\n");
 	cpu_jump(cpu, operand_read_value(cpu, operand));
 }
 
 void INC(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("INC\n");
+	DEBUG_PRINTF("INC\n");
 	c_word value = operand_read_value(cpu, operand);
 	operand_write_value(cpu, operand, value+1);
 }
 
 void DEC(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("DEC\n");
+	DEBUG_PRINTF("DEC\n");
 	c_word value = operand_read_value(cpu, operand);
 	operand_write_value(cpu, operand, value-1);
 }
 
 void ADD(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
-	printf("ADD\n");
+	DEBUG_PRINTF("ADD\n");
 
 	c_word op2_val = operand_read_value(cpu, op2);
 	c_word op1_val = operand_read_value(cpu, op1);
@@ -74,7 +71,7 @@ void ADD(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 
 void SUB(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
-	printf("SUB\n");
+	DEBUG_PRINTF("SUB\n");
 
 	c_word op2_val = operand_read_value(cpu, op2);
 	c_word op1_val = operand_read_value(cpu, op1);
@@ -84,7 +81,7 @@ void SUB(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 
 void MUL(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
-	printf("MUL\n");
+	DEBUG_PRINTF("MUL\n");
 
 	c_word op2_val = operand_read_value(cpu, op2);
 	c_word op1_val = operand_read_value(cpu, op1);
@@ -94,7 +91,7 @@ void MUL(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 
 void DIV(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
-	printf("DIV\n");
+	DEBUG_PRINTF("DIV\n");
 
 	c_word op2_val = operand_read_value(cpu, op2);
 	c_word op1_val = operand_read_value(cpu, op1);
@@ -105,7 +102,7 @@ void DIV(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 
 void SHOW(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("SHOW\n");
+	DEBUG_PRINTF("SHOW\n");
 	c_word value = operand_read_value(cpu, operand);
 
 	switch(operand_get_size(operand))
@@ -124,7 +121,7 @@ void SHOW(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 
 void TEST(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("TEST\n");
+	DEBUG_PRINTF("TEST\n");
 	c_word value = operand_read_value(cpu, operand);
 
 	cpu->reg.flags = 0;
@@ -141,7 +138,7 @@ void TEST(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 
 void STEST(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("STEST\n");
+	DEBUG_PRINTF("STEST\n");
 	c_sword value = operand_read_value(cpu, operand);
 
 	cpu->reg.flags = 0;
@@ -162,7 +159,7 @@ void STEST(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 
 void CMP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
-	printf("CMP\n");
+	DEBUG_PRINTF("CMP\n");
 	c_word value1 = operand_read_value(cpu, op1);
 	c_word value2 = operand_read_value(cpu, op2);
 
@@ -184,7 +181,7 @@ void CMP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 
 void SCMP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
-	printf("SCMP\n");
+	DEBUG_PRINTF("SCMP\n");
 	c_sword value1 = operand_read_value(cpu, op1);
 	c_sword value2 = operand_read_value(cpu, op2);
 
@@ -206,7 +203,7 @@ void SCMP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 
 void JZ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 {
-	printf("JZ\n");
+	DEBUG_PRINTF("JZ\n");
 	c_word target = operand_read_value(cpu, target_operand);
 
 	if(cpu_get_flag(cpu, FLAG_ZERO))
@@ -217,7 +214,7 @@ void JZ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 
 void JNZ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 {
-	printf("JNZ\n");
+	DEBUG_PRINTF("JNZ\n");
 	c_word target = operand_read_value(cpu, target_operand);
 
 	if(!cpu_get_flag(cpu, FLAG_ZERO))
@@ -228,7 +225,7 @@ void JNZ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 
 void JEQ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 {
-	printf("JEQ\n");
+	DEBUG_PRINTF("JEQ\n");
 	c_word target = operand_read_value(cpu, target_operand);
 
 	if(cpu_get_flag(cpu, FLAG_EQUAL))
@@ -239,7 +236,7 @@ void JEQ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 
 void JNEQ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 {
-	printf("JNEQ\n");
+	DEBUG_PRINTF("JNEQ\n");
 	c_word target = operand_read_value(cpu, target_operand);
 
 	if(!cpu_get_flag(cpu, FLAG_EQUAL))
@@ -251,7 +248,7 @@ void JNEQ(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 
 void JGT(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 {
-	printf("JGT\n");
+	DEBUG_PRINTF("JGT\n");
 	c_word target = operand_read_value(cpu, target_operand);
 
 	if(cpu_get_flag(cpu, FLAG_GT))
@@ -261,7 +258,7 @@ void JGT(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 }
 void JNGT(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 {
-	printf("JNGT\n");
+	DEBUG_PRINTF("JNGT\n");
 	c_word target = operand_read_value(cpu, target_operand);
 
 	if(!cpu_get_flag(cpu, FLAG_GT))
@@ -272,7 +269,7 @@ void JNGT(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 
 void JLT(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 {
-	printf("JLT\n");
+	DEBUG_PRINTF("JLT\n");
 	c_word target = operand_read_value(cpu, target_operand);
 
 	if(cpu_get_flag(cpu, FLAG_LT))
@@ -282,7 +279,7 @@ void JLT(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 }
 void JNLT(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 {
-	printf("JNLT\n");
+	DEBUG_PRINTF("JNLT\n");
 	c_word target = operand_read_value(cpu, target_operand);
 
 	if(!cpu_get_flag(cpu, FLAG_LT))
@@ -293,7 +290,7 @@ void JNLT(cpu_t* cpu, operand_t const* target_operand, operand_t const* unused)
 
 void AND(cpu_t* cpu, operand_t const* operand1, operand_t const* operand2)
 {
-	printf("AND\n");
+	DEBUG_PRINTF("AND\n");
 	c_word value1 = operand_read_value(cpu, operand1);
 	c_word value2 = operand_read_value(cpu, operand2);
 
@@ -301,7 +298,7 @@ void AND(cpu_t* cpu, operand_t const* operand1, operand_t const* operand2)
 }
 void OR(cpu_t* cpu, operand_t const* operand1, operand_t const* operand2)
 {
-	printf("OR\n");
+	DEBUG_PRINTF("OR\n");
 	c_word value1 = operand_read_value(cpu, operand1);
 	c_word value2 = operand_read_value(cpu, operand2);
 
@@ -309,7 +306,7 @@ void OR(cpu_t* cpu, operand_t const* operand1, operand_t const* operand2)
 }
 void XOR(cpu_t* cpu, operand_t const* operand1, operand_t const* operand2)
 {
-	printf("XOR\n");
+	DEBUG_PRINTF("XOR\n");
 	c_word value1 = operand_read_value(cpu, operand1);
 	c_word value2 = operand_read_value(cpu, operand2);
 
@@ -317,13 +314,13 @@ void XOR(cpu_t* cpu, operand_t const* operand1, operand_t const* operand2)
 }
 void NOT(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("NOT\n");
+	DEBUG_PRINTF("NOT\n");
 	operand_write_value(cpu, operand, ~operand_read_value(cpu, operand));
 }
 
 void PUSH(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("PUSH\n");
+	DEBUG_PRINTF("PUSH\n");
 	c_word value = operand_read_value(cpu, operand);
 
 	switch(operand_get_size(operand))
@@ -341,7 +338,7 @@ void PUSH(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 }
 void POP(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("POP\n");
+	DEBUG_PRINTF("POP\n");
 	switch(operand_get_size(operand))
 	{
 	case sizeof(c_long):
@@ -358,14 +355,14 @@ void POP(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 
 void CALL(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
-	printf("CALL\n");
+	DEBUG_PRINTF("CALL\n");
 	c_word address = operand_read_value(cpu, operand);
 	cpu_call(cpu, address);
 }
 
 void RET(cpu_t* cpu, operand_t const* unused1, operand_t const* unused2)
 {
-	printf("RET\n");
+	DEBUG_PRINTF("RET\n");
 	cpu_return(cpu);
 }
 

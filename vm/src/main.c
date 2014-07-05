@@ -6,6 +6,7 @@
 #include "error.h"
 #include "cpu.h"
 #include "vector.h"
+#include "debug.h"
 
 #include <stdlib.h>
 
@@ -33,7 +34,7 @@ int main(int argc, char** args)
 
 	int error;
 
-	memory_t* memory = mem_init(4096);
+	memory_t* memory = mem_init(1024*10); // 10 MB
 	if(error_last)
 	{
 		error_print(error_last);
@@ -61,6 +62,10 @@ int main(int argc, char** args)
 	mem_load_file(memory, arguments.program, programStart);
 
 
+	// load brainfuck program into memory at 0xffff0000
+	mem_load_file(memory, "test.bf", 0xffff0000);
+
+
 	// Write some fun data to play with
 	mem_write_long(memory, 0x666, 1337);
 	mem_write_long(memory, 1337, 0xdeadbeef);
@@ -78,7 +83,7 @@ int main(int argc, char** args)
 	while(!cpu->halted)
 	{
 		cpu_step(cpu);
-		printf("--\n");
+		DEBUG_PRINTF("--\n");
 	}
 
 	free(shared_mem);
