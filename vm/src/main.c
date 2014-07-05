@@ -34,7 +34,7 @@ int main(int argc, char** args)
 
 	int error;
 
-	memory_t* memory = mem_init(1024*10); // 10 MB
+	memory_t* memory = mem_init(1024*10); // 10 KB
 	if(error_last)
 	{
 		error_print(error_last);
@@ -51,11 +51,11 @@ int main(int argc, char** args)
 	if(error = vm_init(&arguments))
 		error_print(error);
 
-	//mem_read_short(mem_resolve(memory, 0x104));
 
 	page_info_t shared_info = { PAGE_WRITE, false };
 	c_byte* shared_mem = malloc(sizeof(c_byte) * C_PAGE_SIZE);
 	//page_map(&memory->page_table, 0, &shared_info, shared_mem);
+
 
 	// Load test program into memory
 	c_addr programStart = 0xff000000;
@@ -70,15 +70,16 @@ int main(int argc, char** args)
 	mem_write_long(memory, 0x666, 1337);
 	mem_write_long(memory, 1337, 0xdeadbeef);
 
+
 	// Initialize registers to identifiable values
 	cpu->reg.a = 1000;
 	cpu->reg.b = 2000;
 	cpu->reg.c = 3000;
 	cpu->reg.d = 4000;
 
-	// Move instruction pointer to start of program and step through the 7 instructions
+
+	// Move instruction pointer to start of program and step through the instructions until HALT is reached
 	cpu->reg.ip = programStart;
-	int i;
 	cpu->halted = false;
 	while(!cpu->halted)
 	{
