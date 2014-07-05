@@ -20,6 +20,7 @@ typedef struct cpu
 	} reg;
 
 	memory_t* memory;
+	bool halted;
 } cpu_t;
 
 struct cpu_instruction

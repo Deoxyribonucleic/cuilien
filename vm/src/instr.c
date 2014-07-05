@@ -18,6 +18,7 @@ void NOP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 void HALT(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
 	printf("HALT\n");
+	cpu->halted = true;
 }
 
 void INT(cpu_t* cpu, operand_t const* op1, operand_t const* op2)

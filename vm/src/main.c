@@ -84,11 +84,11 @@ int main(int argc, char** args)
 
 	close(file);
 
-	
+
 	// Write some fun data to play with
 	mem_write_long(memory, 0x666, 1337);
 	mem_write_long(memory, 1337, 0xdeadbeef);
-	
+
 	// Initialize registers to identifiable values
 	cpu->reg.a = 1000;
 	cpu->reg.b = 2000;
@@ -98,12 +98,13 @@ int main(int argc, char** args)
 	// Move instruction pointer to start of program and step through the 7 instructions
 	cpu->reg.ip = programStart;
 	int i;
-	for(i = 0; i<20; ++i)
+	cpu->halted = false;
+	while(!cpu->halted)
 	{
 		cpu_step(cpu);
 		printf("--\n");
 	}
-	
+
 	free(shared_mem);
 
 	cpu_free(cpu);

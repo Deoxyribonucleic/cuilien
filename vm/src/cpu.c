@@ -37,6 +37,8 @@ cpu_handle cpu_init(memory_t* memory)
 
 	cpu->memory = memory;
 
+	cpu->halted = true;
+
 	return cpu;
 }
 
