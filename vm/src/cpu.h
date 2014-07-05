@@ -16,7 +16,7 @@ typedef struct cpu
 {
 	struct
 	{
-		c_reg a, b, c, d, ip, flags;
+		c_reg a, b, c, d, ip, sp, flags;
 	} reg;
 
 	memory_t* memory;

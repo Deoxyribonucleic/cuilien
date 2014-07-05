@@ -32,6 +32,8 @@ c_word get_operand_register_value(cpu_t* cpu, operand_t const* op)
 		return cpu->reg.d;
 	case OP_REG_IP:
 		return cpu->reg.ip;
+	case OP_REG_SP:
+		return cpu->reg.sp;
 	case OP_REG_FLAGS:
 		return cpu->reg.flags;
 	default:
@@ -57,6 +59,9 @@ void set_operand_register_value(cpu_t* cpu, operand_t const* op, c_word value)
 		break;
 	case OP_REG_IP:
 		cpu->reg.ip = value;
+		break;
+	case OP_REG_SP:
+		cpu->reg.sp = value;
 		break;
 	case OP_REG_FLAGS:
 		cpu->reg.flags = value;

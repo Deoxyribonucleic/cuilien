@@ -31,6 +31,8 @@ cpu_handle cpu_init(memory_t* memory)
 	cpu->reg.d = 0;
 
 	cpu->reg.ip = 0;
+	cpu->reg.sp = 0;
+	
 	cpu->reg.flags = 0;
 
 	cpu->memory = memory;

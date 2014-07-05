@@ -18,7 +18,8 @@
 #define OP_REG_C		3
 #define OP_REG_D		4
 #define OP_REG_IP		5
-#define OP_REG_FLAGS	6
+#define OP_REG_SP		6
+#define OP_REG_FLAGS	7
 
 typedef struct operand
 {
