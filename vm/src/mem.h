@@ -28,4 +28,6 @@ void mem_write_byte(memory_t* memory, c_addr address, c_byte data);
 void mem_read_value(memory_t* memory, c_addr address, c_byte* out, size_t length, bool exec);
 void mem_write_value(memory_t* memory, c_addr address, c_byte const* value, size_t length);
 
+size_t mem_load_file(mem_handle memory, char const* filename, c_addr start);
+
 #endif

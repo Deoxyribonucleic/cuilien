@@ -8,9 +8,7 @@
 #include "vector.h"
 
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+
 
 void print_vector_info(vector_t* vector)
 {
@@ -60,29 +58,7 @@ int main(int argc, char** args)
 
 	// Load test program into memory
 	c_addr programStart = 0xff000000;
-
-	int file = open(arguments.program, O_RDONLY);
-
-	if(file < 0)
-	{
-		printf("File not found.\n");
-		return 1;
-	}
-
-	c_byte buffer[256];
-	ssize_t chunk_length;
-	size_t bytes_written = 0;
-	while((chunk_length = read(file, buffer, 256)) > 0)
-	{
-		int i;
-		for(i=0; i<chunk_length; ++i)
-		{
-			mem_write_byte(memory, programStart + bytes_written, buffer[i]);
-			++bytes_written;
-		}
-	}
-
-	close(file);
+	mem_load_file(memory, arguments.program, programStart);
 
 
 	// Write some fun data to play with
