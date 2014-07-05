@@ -233,7 +233,6 @@ void build_instruction_vector()
 	set[INSTR_CMP]	= CMP;
 	set[INSTR_TEST]	= TEST;
 
-
 	set[INSTR_JZ]	= JZ;
 	set[INSTR_JNZ]	= JNZ;
 	set[INSTR_JEQ]	= JEQ;
