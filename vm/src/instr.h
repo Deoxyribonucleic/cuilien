@@ -47,7 +47,10 @@
 #define INSTR_CALL  0x0060
 #define INSTR_RET   0x0061
 
-#define INSTRUCTION_VECTOR_LENGTH	100
+#define INSTR_PUTC  0x0070
+#define INSTR_GETC  0x0071 // not implemented
+
+#define INSTRUCTION_VECTOR_LENGTH	0x80
 
 typedef struct cpu cpu_t;
 typedef struct operand operand_t;

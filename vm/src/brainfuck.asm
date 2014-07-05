@@ -107,7 +107,7 @@ decrement_value:
 	ret
 
 output:
-	show byte [d]
+	putc byte [d]
 	ret
 
 input: # not implemented

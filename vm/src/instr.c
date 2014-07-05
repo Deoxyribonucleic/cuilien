@@ -366,6 +366,13 @@ void RET(cpu_t* cpu, operand_t const* unused1, operand_t const* unused2)
 	cpu_return(cpu);
 }
 
+void PUTC(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
+{
+	DEBUG_PRINTF("PUTC\n");
+	char character = (char)operand_read_value(cpu, operand);
+	putchar(character);
+}
+
 void build_instruction_vector()
 {
 	if(instruction_vector_built)
@@ -415,6 +422,8 @@ void build_instruction_vector()
 
 	set[INSTR_CALL] = CALL;
 	set[INSTR_RET]  = RET;
+
+	set[INSTR_PUTC] = PUTC;
 
 	instruction_vector_built = true;
 }
