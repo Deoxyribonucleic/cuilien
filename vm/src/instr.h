@@ -33,8 +33,8 @@
 #define INSTR_JNGT	0x0029
 #define INSTR_JLT	0x002A
 #define INSTR_JNLT	0x002B
-#define INSTR_JER	0x002C
-#define INSTR_JNER	0x002D
+#define INSTR_JER	0x002C // not implemented
+#define INSTR_JNER	0x002D // not implemented
 
 #define INSTR_AND	0x0040
 #define INSTR_OR	0x0041
