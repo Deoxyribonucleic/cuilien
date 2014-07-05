@@ -43,9 +43,15 @@ void cpu_clear_flag(cpu_handle cpu, int flag);
 
 void cpu_jump(cpu_handle cpu, c_addr target);
 
-// Deprecated:
-/*c_byte* cpu_resolve_parameter(cpu_handle cpu, c_byte flags, c_word value);
-void cpu_write_parameter(cpu_handle cpu, c_byte flags, c_word value, c_byte* src, size_t size);
-void cpu_read_parameter(cpu_handle cpu, c_byte flags, c_word value, c_byte* dest, size_t size);*/
+void cpu_push_long(cpu_handle cpu, c_long value);
+void cpu_push_short(cpu_handle cpu, c_short value);
+void cpu_push_byte(cpu_handle cpu, c_byte value);
+
+c_long cpu_pop_long(cpu_handle cpu);
+c_short cpu_pop_short(cpu_handle cpu);
+c_byte cpu_pop_byte(cpu_handle cpu);
+
+void cpu_call(cpu_handle cpu, c_addr subroutine);
+void cpu_return(cpu_handle);
 
 #endif

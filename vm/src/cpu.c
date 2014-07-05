@@ -32,7 +32,7 @@ cpu_handle cpu_init(memory_t* memory)
 
 	cpu->reg.ip = 0;
 	cpu->reg.sp = 0;
-	
+
 	cpu->reg.flags = 0;
 
 	cpu->memory = memory;
@@ -71,6 +71,7 @@ void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction)
 	instruction_vector[instruction->operation](cpu, &instruction->op1, &instruction->op2);
 }
 
+
 bool cpu_get_flag(cpu_handle cpu, int flag)
 {
 	return cpu->reg.flags & flag;
@@ -86,8 +87,65 @@ void cpu_clear_flag(cpu_handle cpu, int flag)
 	cpu->reg.flags &= ~flag;
 }
 
+
 void cpu_jump(cpu_handle cpu, c_addr target)
 {
 	printf("control flow: 0x%08x => 0x%08x\n", cpu->reg.ip, target);
 	cpu->reg.ip = target;
+}
+
+
+void cpu_push_long(cpu_handle cpu, c_long value)
+{
+	cpu->reg.sp -= sizeof(c_long);
+	mem_write_long(cpu->memory, cpu->reg.sp, value);
+}
+
+void cpu_push_short(cpu_handle cpu, c_short value)
+{
+	cpu->reg.sp -= sizeof(c_short);
+	mem_write_short(cpu->memory, cpu->reg.sp, value);
+}
+
+void cpu_push_byte(cpu_handle cpu, c_byte value)
+{
+	cpu->reg.sp -= sizeof(c_byte);
+	mem_write_byte(cpu->memory, cpu->reg.sp, value);
+}
+
+
+c_long cpu_pop_long(cpu_handle cpu)
+{
+	c_long value = mem_read_long(cpu->memory, cpu->reg.sp, false);
+	cpu->reg.sp += sizeof(c_long);
+	return value;
+}
+
+c_short cpu_pop_short(cpu_handle cpu)
+{
+	c_short value = mem_read_short(cpu->memory, cpu->reg.sp, false);
+	cpu->reg.sp += sizeof(c_short);
+	return value;
+}
+
+c_byte cpu_pop_byte(cpu_handle cpu)
+{
+	c_byte value = mem_read_byte(cpu->memory, cpu->reg.sp, false);
+	cpu->reg.sp += sizeof(c_byte);
+	return value;
+}
+
+
+void cpu_call(cpu_handle cpu, c_addr subroutine)
+{
+	printf("calling subroutine at 0x%08x\n", subroutine);
+	cpu_push_long(cpu, cpu->reg.ip);
+	cpu_jump(cpu, subroutine);
+}
+
+void cpu_return(cpu_handle cpu)
+{
+	c_addr return_address = cpu_pop_long(cpu);
+	printf("returning from subroutine to 0x%08x\n", return_address);
+	cpu_jump(cpu, return_address);
 }

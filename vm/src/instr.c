@@ -28,7 +28,7 @@ void INT(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 void MOV(cpu_t* cpu, operand_t const* dest, operand_t const* src)
 {
 	printf("MOV\n");
-	
+
 	c_word src_val = operand_read_value(cpu, src);
 	c_word dst_val = operand_read_value(cpu, dest);
 
@@ -64,7 +64,7 @@ void DEC(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 void ADD(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
 	printf("ADD\n");
-	
+
 	c_word op2_val = operand_read_value(cpu, op2);
 	c_word op1_val = operand_read_value(cpu, op1);
 
@@ -74,7 +74,7 @@ void ADD(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 void SUB(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
 	printf("SUB\n");
-	
+
 	c_word op2_val = operand_read_value(cpu, op2);
 	c_word op1_val = operand_read_value(cpu, op1);
 
@@ -84,7 +84,7 @@ void SUB(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 void MUL(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
 	printf("MUL\n");
-	
+
 	c_word op2_val = operand_read_value(cpu, op2);
 	c_word op1_val = operand_read_value(cpu, op1);
 
@@ -94,7 +94,7 @@ void MUL(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 void DIV(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
 	printf("DIV\n");
-	
+
 	c_word op2_val = operand_read_value(cpu, op2);
 	c_word op1_val = operand_read_value(cpu, op1);
 
@@ -320,6 +320,54 @@ void NOT(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 	operand_write_value(cpu, operand, ~operand_read_value(cpu, operand));
 }
 
+void PUSH(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
+{
+	printf("PUSH\n");
+	c_word value = operand_read_value(cpu, operand);
+
+	switch(operand_get_size(operand))
+	{
+	case sizeof(c_long):
+		cpu_push_long(cpu, value);
+		return;
+	case sizeof(c_short):
+		cpu_push_short(cpu, value);
+		return;
+	case sizeof(c_byte):
+		cpu_push_byte(cpu, value);
+		return;
+	}
+}
+void POP(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
+{
+	printf("POP\n");
+	switch(operand_get_size(operand))
+	{
+	case sizeof(c_long):
+		operand_write_value(cpu, operand, cpu_pop_long(cpu));
+		return;
+	case sizeof(c_short):
+		operand_write_value(cpu, operand, cpu_pop_short(cpu));
+		return;
+	case sizeof(c_byte):
+		operand_write_value(cpu, operand, cpu_pop_byte(cpu));
+		return;
+	}
+}
+
+void CALL(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
+{
+	printf("CALL\n");
+	c_word address = operand_read_value(cpu, operand);
+	cpu_call(cpu, address);
+}
+
+void RET(cpu_t* cpu, operand_t const* unused1, operand_t const* unused2)
+{
+	printf("RET\n");
+	cpu_return(cpu);
+}
+
 void build_instruction_vector()
 {
 	if(instruction_vector_built)
@@ -327,42 +375,48 @@ void build_instruction_vector()
 
 	memset(instruction_vector, 0, sizeof(instruction_function) * INSTRUCTION_VECTOR_LENGTH);
 	instruction_function* set = instruction_vector;
-	
-	set[INSTR_NOP]	= NOP;
-	set[INSTR_HALT]	= HALT;
-	set[INSTR_INT]	= INT;
-	set[INSTR_MOV]	= MOV;
 
-	set[INSTR_JMP]	= JMP;
+	set[INSTR_NOP]  = NOP;
+	set[INSTR_HALT] = HALT;
+	set[INSTR_INT]  = INT;
+	set[INSTR_MOV]  = MOV;
 
-	set[INSTR_INC]	= INC;
-	set[INSTR_DEC]	= DEC;
+	set[INSTR_JMP]  = JMP;
 
-	set[INSTR_ADD]	= ADD;
-	set[INSTR_SUB]	= SUB;
-	set[INSTR_MUL]	= MUL;
-	set[INSTR_DIV]	= DIV;
+	set[INSTR_INC]  = INC;
+	set[INSTR_DEC]  = DEC;
 
-	set[INSTR_SHOW]	= SHOW;
+	set[INSTR_ADD]  = ADD;
+	set[INSTR_SUB]  = SUB;
+	set[INSTR_MUL]  = MUL;
+	set[INSTR_DIV]  = DIV;
 
-	set[INSTR_CMP]	= CMP;
-	set[INSTR_SCMP]	= SCMP;
-	set[INSTR_TEST]	= TEST;
+	set[INSTR_SHOW] = SHOW;
+
+	set[INSTR_CMP]  = CMP;
+	set[INSTR_SCMP] = SCMP;
+	set[INSTR_TEST] = TEST;
 	set[INSTR_STEST]= STEST;
 
-	set[INSTR_JZ]	= JZ;
-	set[INSTR_JNZ]	= JNZ;
-	set[INSTR_JEQ]	= JEQ;
-	set[INSTR_JNEQ]	= JNEQ;
-	set[INSTR_JGT]	= JGT;
-	set[INSTR_JNGT]	= JNGT;
-	set[INSTR_JLT]	= JLT;
-	set[INSTR_JNLT]	= JNLT;
+	set[INSTR_JZ]   = JZ;
+	set[INSTR_JNZ]  = JNZ;
+	set[INSTR_JEQ]  = JEQ;
+	set[INSTR_JNEQ] = JNEQ;
+	set[INSTR_JGT]  = JGT;
+	set[INSTR_JNGT] = JNGT;
+	set[INSTR_JLT]  = JLT;
+	set[INSTR_JNLT] = JNLT;
 
-	set[INSTR_AND]	= AND;
-	set[INSTR_OR]	= OR;
-	set[INSTR_XOR]	= XOR;
-	set[INSTR_NOT]	= NOT;
+	set[INSTR_AND]  = AND;
+	set[INSTR_OR]   = OR;
+	set[INSTR_XOR]  = XOR;
+	set[INSTR_NOT]  = NOT;
+
+	set[INSTR_PUSH] = PUSH;
+	set[INSTR_POP]  = POP;
+
+	set[INSTR_CALL] = CALL;
+	set[INSTR_RET]  = RET;
 
 	instruction_vector_built = true;
 }
