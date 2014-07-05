@@ -190,7 +190,7 @@ size_t mem_load_file(mem_handle memory, char const* filename, c_addr start)
 	if(file < 0)
 	{
 		printf("File not found.\n");
-		return 1;
+		return 0;
 	}
 
 	c_byte buffer[256];
