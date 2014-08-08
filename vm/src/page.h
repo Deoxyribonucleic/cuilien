@@ -7,11 +7,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define C_PAGE_SIZE	1024
+#define C_PAGE_SIZE  1024
 
-#define PAGE_READ	1
-#define PAGE_WRITE	2
-#define PAGE_EXEC	4
+#define PAGE_READ    1
+#define PAGE_WRITE   2
+#define PAGE_EXEC    4
 
 #define PAGE_ALIGN(x)	(x - (x % C_PAGE_SIZE))
 

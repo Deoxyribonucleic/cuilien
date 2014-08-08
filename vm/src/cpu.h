@@ -4,13 +4,13 @@
 #include "mem.h"
 #include "operand.h"
 
-#define INSTRUCTION_LENGTH	12
+#define INSTRUCTION_LENGTH 12
 
-#define FLAG_ZERO	1
-#define FLAG_EQUAL	2
-#define FLAG_GT		4
-#define FLAG_LT		8
-#define FLAG_ERROR	16
+#define FLAG_ZERO   1
+#define FLAG_EQUAL  2
+#define FLAG_GT     4
+#define FLAG_LT     8
+#define FLAG_ERROR  16
 
 typedef struct cpu
 {

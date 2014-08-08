@@ -5,21 +5,21 @@
 
 #include <stddef.h>
 
-#define PF_REGISTER		8
-#define PF_DEREFERENCE	4
-#define PF_SIZE_MASK	3
+#define PF_REGISTER     8
+#define PF_DEREFERENCE  4
+#define PF_SIZE_MASK    3
 
-#define PF_SIZE_WORD	3
-#define PF_SIZE_SHORT	1
-#define PF_SIZE_BYTE	0
+#define PF_SIZE_WORD    3
+#define PF_SIZE_SHORT   1
+#define PF_SIZE_BYTE    0
 
-#define OP_REG_A		1
-#define OP_REG_B		2
-#define OP_REG_C		3
-#define OP_REG_D		4
-#define OP_REG_IP		5
-#define OP_REG_SP		6
-#define OP_REG_FLAGS	7
+#define OP_REG_A        1
+#define OP_REG_B        2
+#define OP_REG_C        3
+#define OP_REG_D        4
+#define OP_REG_IP       5
+#define OP_REG_SP       6
+#define OP_REG_FLAGS    7
 
 typedef struct operand
 {
