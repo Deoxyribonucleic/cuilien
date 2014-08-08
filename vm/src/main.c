@@ -34,7 +34,7 @@ int main(int argc, char** args)
 
 	int error;
 
-	memory_t* memory = mem_init(1024*10); // 10 KB
+	memory_t* memory = mem_init(1024*1024*10); // 10 MB
 	if(error_last)
 	{
 		error_print(error_last);
@@ -62,8 +62,8 @@ int main(int argc, char** args)
 	mem_load_file(memory, arguments.program, programStart);
 
 
-	// load brainfuck program into memory at 0xffff0000
-	mem_load_file(memory, "test.bf", 0xffff0000);
+	// load brainfuck program into memory at 0xffe00000
+	mem_load_file(memory, "golden.bf", 0xffe00000);
 
 
 	// Write some fun data to play with

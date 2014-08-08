@@ -8,10 +8,10 @@
 
 
 ; C is our instruction pointer
-mov c, 0xffff0000
+mov c, 0xffe00000
 
 ; D is our data pointer
-mov d, 0xffffa000
+mov d, 0xfff00000
 
 
 main:
