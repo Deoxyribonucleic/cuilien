@@ -1,0 +1,26 @@
+env = Environment(CPATH=["."])
+
+
+# Source section
+sources = Split("""
+args.c
+cpu.c
+error.c
+instr.c
+main.c
+mem.c
+operand.c
+page.c
+util.c
+vector.c
+vm.c
+""")
+
+
+# Object section
+objects = env.Object(source = sources)
+
+
+# Target section
+vm = env.Program(target = "vm", source = objects)
+

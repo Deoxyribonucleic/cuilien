@@ -63,7 +63,7 @@ int main(int argc, char** args)
 
 
 	// load brainfuck program into memory at 0xffe00000
-	mem_load_file(memory, "golden.bf", 0xffe00000);
+	mem_load_file(memory, "99bottles.bf", 0xffe00000);
 
 
 	// Write some fun data to play with
