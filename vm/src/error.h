@@ -2,7 +2,7 @@
 #define _ERROR_H_
 
 #define ERR_NONE                 0
-#define ERR_VM_FN                1
+#define ERR_VM_FNF               1
 
 #define ERR_MEM_HOST_OOM         50
 #define ERR_MEM_LIMIT_REACHED    51
