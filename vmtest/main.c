@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-#include "vm.h"
-#include "args.h"
-#include "mem.h"
-#include "error.h"
-#include "cpu.h"
-#include "vector.h"
-#include "debug.h"
+#include "vm/vm.h"
+#include "vm/args.h"
+#include "vm/mem.h"
+#include "vm/error.h"
+#include "vm/cpu.h"
+#include "vm/vector.h"
+#include "vm/debug.h"
 
 #include <stdlib.h>
 
@@ -63,7 +63,7 @@ int main(int argc, char** args)
 
 
 	// load brainfuck program into memory at 0xffe00000
-	mem_load_file(memory, "99bottles.bf", 0xffe00000);
+	mem_load_file(memory, "vmtest/programs/pi.bf", 0xffe00000);
 
 
 	// Write some fun data to play with
