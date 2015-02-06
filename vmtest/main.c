@@ -9,6 +9,7 @@
 #include "vm/debug.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 
 void print_vector_info(vector_t* vector)
@@ -63,7 +64,7 @@ int main(int argc, char** args)
 
 
 	// load brainfuck program into memory at 0xffe00000
-	mem_load_file(memory, "vmtest/programs/pi.bf", 0xffe00000);
+	mem_load_file(memory, "vmtest/programs/99bottles.bf", 0xffe00000);
 
 
 	// Write some fun data to play with
@@ -71,15 +72,22 @@ int main(int argc, char** args)
 	mem_write_long(memory, 1337, 0xdeadbeef);
 
 
-	// Initialize registers to identifiable values
-	cpu->reg.a = 1000;
-	cpu->reg.b = 2000;
-	cpu->reg.c = 3000;
-	cpu->reg.d = 4000;
+	// Create a context and initialize memory, registers
+	context_t context;
+	memset(&context, 0, sizeof(context));
+	context.memory = memory;
+
+	// Put identifiable values in registers
+	context.reg.a = 1000;
+	context.reg.b = 2000;
+	context.reg.c = 3000;
+	context.reg.d = 4000;
+
+	cpu->context = &context;
 
 
 	// Move instruction pointer to start of program and step through the instructions until HALT is reached
-	cpu->reg.ip = programStart;
+	cpu->context->reg.ip = programStart;
 	cpu->halted = false;
 	while(!cpu->halted)
 	{

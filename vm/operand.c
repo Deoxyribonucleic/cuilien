@@ -23,19 +23,19 @@ c_word get_operand_register_value(cpu_t* cpu, operand_t const* op)
 	switch(op->value)
 	{
 	case OP_REG_A:
-		return cpu->reg.a;
+		return cpu->context->reg.a;
 	case OP_REG_B:
-		return cpu->reg.b;
+		return cpu->context->reg.b;
 	case OP_REG_C:
-		return cpu->reg.c;
+		return cpu->context->reg.c;
 	case OP_REG_D:
-		return cpu->reg.d;
+		return cpu->context->reg.d;
 	case OP_REG_IP:
-		return cpu->reg.ip;
+		return cpu->context->reg.ip;
 	case OP_REG_SP:
-		return cpu->reg.sp;
+		return cpu->context->reg.sp;
 	case OP_REG_FLAGS:
-		return cpu->reg.flags;
+		return cpu->context->reg.flags;
 	default:
 		return 0x00000000;
 	}
@@ -46,25 +46,25 @@ void set_operand_register_value(cpu_t* cpu, operand_t const* op, c_word value)
 	switch(op->value)
 	{
 	case OP_REG_A:
-		cpu->reg.a = value;
+		cpu->context->reg.a = value;
 		break;
 	case OP_REG_B:
-		cpu->reg.b = value;
+		cpu->context->reg.b = value;
 		break;
 	case OP_REG_C:
-		cpu->reg.c = value;
+		cpu->context->reg.c = value;
 		break;
 	case OP_REG_D:
-		cpu->reg.d = value;
+		cpu->context->reg.d = value;
 		break;
 	case OP_REG_IP:
-		cpu->reg.ip = value;
+		cpu->context->reg.ip = value;
 		break;
 	case OP_REG_SP:
-		cpu->reg.sp = value;
+		cpu->context->reg.sp = value;
 		break;
 	case OP_REG_FLAGS:
-		cpu->reg.flags = value;
+		cpu->context->reg.flags = value;
 		break;
 	default:;
 	}
@@ -107,7 +107,7 @@ inline void sized_copy_by_cast(void* dst, size_t dst_size, void const* src, size
 void read_register_pointer(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 {
 	c_addr pointer = get_operand_register_value(cpu, op);
-	mem_read_value(cpu->memory, pointer, out, size, false);
+	mem_read_value(cpu->context->memory, pointer, out, size, false);
 }
 
 void read_register(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
@@ -118,7 +118,7 @@ void read_register(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 
 void read_value_pointer(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 {
-	mem_read_value(cpu->memory, op->value, out, size, false);
+	mem_read_value(cpu->context->memory, op->value, out, size, false);
 }
 
 void read_value(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
@@ -158,7 +158,7 @@ c_word operand_read_value(cpu_t* cpu, operand_t const* op)
 void write_register_pointer(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
 {
 	c_addr pointer = get_operand_register_value(cpu, op);
-	mem_write_value(cpu->memory, pointer, data, size);
+	mem_write_value(cpu->context->memory, pointer, data, size);
 }
 
 void write_register(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
@@ -170,7 +170,7 @@ void write_register(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t 
 
 void write_value_pointer(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
 {
-	mem_write_value(cpu->memory, op->value, data, size);
+	mem_write_value(cpu->context->memory, op->value, data, size);
 }
 
 void operand_write(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)

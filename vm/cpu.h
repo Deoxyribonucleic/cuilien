@@ -12,7 +12,7 @@
 #define FLAG_LT     8
 #define FLAG_ERROR  16
 
-typedef struct cpu
+typedef struct context
 {
 	struct
 	{
@@ -20,6 +20,11 @@ typedef struct cpu
 	} reg;
 
 	memory_t* memory;
+} context_t;
+
+typedef struct cpu
+{
+	context_t* context;
 	bool halted;
 } cpu_t;
 
@@ -32,7 +37,7 @@ struct cpu_instruction
 typedef cpu_t* cpu_handle;
 typedef void (*cpu_function)(cpu_handle, c_byte* op1, c_byte* op2, size_t size);
 
-cpu_handle cpu_init(memory_t* memory);
+cpu_handle cpu_init();
 void cpu_free(cpu_handle cpu);
 
 void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction);

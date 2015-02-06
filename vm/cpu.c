@@ -7,16 +7,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-cpu_handle cpu_init(memory_t* memory)
+cpu_handle cpu_init()
 {
 	build_instruction_vector();
 	error_clear();
 
-	if(memory == NULL)
+	/*if(memory == NULL)
 	{
 		error_last = ERR_CPU_INVALID_MEMORY;
 		return NULL;
-	}
+	}*/
 
 	cpu_handle cpu = malloc(sizeof(cpu_t));
 
@@ -26,17 +26,7 @@ cpu_handle cpu_init(memory_t* memory)
 		return NULL;
 	}
 
-	cpu->reg.a = 0;
-	cpu->reg.b = 0;
-	cpu->reg.c = 0;
-	cpu->reg.d = 0;
-
-	cpu->reg.ip = 0;
-	cpu->reg.sp = 0;
-
-	cpu->reg.flags = 0;
-
-	cpu->memory = memory;
+	cpu->context = NULL;
 
 	cpu->halted = true;
 
@@ -51,23 +41,32 @@ void cpu_free(cpu_handle cpu)
 
 void cpu_step(cpu_handle cpu)
 {
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+
 	struct cpu_instruction instruction;
-	cpu_read_instruction(cpu, cpu->reg.ip, &instruction);
-	cpu->reg.ip += INSTRUCTION_LENGTH;
+	cpu_read_instruction(cpu, cpu->context->reg.ip, &instruction);
+	cpu->context->reg.ip += INSTRUCTION_LENGTH;
 	cpu_execute(cpu, &instruction);
 }
 
 void cpu_read_instruction(cpu_handle cpu, c_addr address, struct cpu_instruction* output)
 {
-	output->operation = mem_read_short(cpu->memory, address, true);
-	output->op1.flags = mem_read_byte(cpu->memory, address + 2, true);
-	output->op2.flags = mem_read_byte(cpu->memory, address + 3, true);
-	output->op1.value = mem_read_long(cpu->memory, address + 4, true);
-	output->op2.value = mem_read_long(cpu->memory, address + 8, true);
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+	assert(cpu->context->memory != NULL);
+
+	output->operation = mem_read_short(cpu->context->memory, address, true);
+	output->op1.flags = mem_read_byte(cpu->context->memory, address + 2, true);
+	output->op2.flags = mem_read_byte(cpu->context->memory, address + 3, true);
+	output->op1.value = mem_read_long(cpu->context->memory, address + 4, true);
+	output->op2.value = mem_read_long(cpu->context->memory, address + 8, true);
 }
 
 void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction)
 {
+	assert(cpu != NULL);
+
 	assert(instruction->operation < INSTRUCTION_VECTOR_LENGTH);
 	assert(instruction_vector[instruction->operation] != 0);
 
@@ -77,77 +76,119 @@ void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction)
 
 bool cpu_get_flag(cpu_handle cpu, int flag)
 {
-	return cpu->reg.flags & flag;
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+
+	return cpu->context->reg.flags & flag;
 }
 
 void cpu_set_flag(cpu_handle cpu, int flag)
 {
-	cpu->reg.flags |= flag;
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+
+	cpu->context->reg.flags |= flag;
 }
 
 void cpu_clear_flag(cpu_handle cpu, int flag)
 {
-	cpu->reg.flags &= ~flag;
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+
+	cpu->context->reg.flags &= ~flag;
 }
 
 
 void cpu_jump(cpu_handle cpu, c_addr target)
 {
-	//printf("control flow: 0x%08x => 0x%08x\n", cpu->reg.ip, target);
-	cpu->reg.ip = target;
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+
+	//printf("control flow: 0x%08x => 0x%08x\n", cpu->context->reg.ip, target);
+	cpu->context->reg.ip = target;
 }
 
 
 void cpu_push_long(cpu_handle cpu, c_long value)
 {
-	cpu->reg.sp -= sizeof(c_long);
-	mem_write_long(cpu->memory, cpu->reg.sp, value);
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+	assert(cpu->context->memory != NULL);
+
+	cpu->context->reg.sp -= sizeof(c_long);
+	mem_write_long(cpu->context->memory, cpu->context->reg.sp, value);
 }
 
 void cpu_push_short(cpu_handle cpu, c_short value)
 {
-	cpu->reg.sp -= sizeof(c_short);
-	mem_write_short(cpu->memory, cpu->reg.sp, value);
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+	assert(cpu->context->memory != NULL);
+
+	cpu->context->reg.sp -= sizeof(c_short);
+	mem_write_short(cpu->context->memory, cpu->context->reg.sp, value);
 }
 
 void cpu_push_byte(cpu_handle cpu, c_byte value)
 {
-	cpu->reg.sp -= sizeof(c_byte);
-	mem_write_byte(cpu->memory, cpu->reg.sp, value);
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+	assert(cpu->context->memory != NULL);
+
+	cpu->context->reg.sp -= sizeof(c_byte);
+	mem_write_byte(cpu->context->memory, cpu->context->reg.sp, value);
 }
 
 
 c_long cpu_pop_long(cpu_handle cpu)
 {
-	c_long value = mem_read_long(cpu->memory, cpu->reg.sp, false);
-	cpu->reg.sp += sizeof(c_long);
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+	assert(cpu->context->memory != NULL);
+
+	c_long value = mem_read_long(cpu->context->memory, cpu->context->reg.sp, false);
+	cpu->context->reg.sp += sizeof(c_long);
 	return value;
 }
 
 c_short cpu_pop_short(cpu_handle cpu)
 {
-	c_short value = mem_read_short(cpu->memory, cpu->reg.sp, false);
-	cpu->reg.sp += sizeof(c_short);
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+	assert(cpu->context->memory != NULL);
+
+	c_short value = mem_read_short(cpu->context->memory, cpu->context->reg.sp, false);
+	cpu->context->reg.sp += sizeof(c_short);
 	return value;
 }
 
 c_byte cpu_pop_byte(cpu_handle cpu)
 {
-	c_byte value = mem_read_byte(cpu->memory, cpu->reg.sp, false);
-	cpu->reg.sp += sizeof(c_byte);
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+	assert(cpu->context->memory != NULL);
+
+	c_byte value = mem_read_byte(cpu->context->memory, cpu->context->reg.sp, false);
+	cpu->context->reg.sp += sizeof(c_byte);
 	return value;
 }
 
 
 void cpu_call(cpu_handle cpu, c_addr subroutine)
 {
+	assert(cpu != NULL);
+	assert(cpu->context != NULL);
+	assert(cpu->context->memory != NULL);
+
 	DEBUG_PRINTF("calling subroutine at 0x%08x\n", subroutine);
-	cpu_push_long(cpu, cpu->reg.ip);
+	cpu_push_long(cpu, cpu->context->reg.ip);
 	cpu_jump(cpu, subroutine);
 }
 
 void cpu_return(cpu_handle cpu)
 {
+	assert(cpu != NULL);
+
 	c_addr return_address = cpu_pop_long(cpu);
 	DEBUG_PRINTF("returning from subroutine to 0x%08x\n", return_address);
 	cpu_jump(cpu, return_address);

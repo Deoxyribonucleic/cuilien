@@ -4,9 +4,10 @@
 #include "operand.h"
 #include "debug.h"
 
+#include <assert.h>
+#include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory.h>
 
 instruction_function instruction_vector[INSTRUCTION_VECTOR_LENGTH];
 bool instruction_vector_built = false;
@@ -91,13 +92,14 @@ void MUL(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 
 void DIV(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
+	assert(cpu->context != NULL);
 	DEBUG_PRINTF("DIV\n");
 
 	c_word op2_val = operand_read_value(cpu, op2);
 	c_word op1_val = operand_read_value(cpu, op1);
 
 	operand_write_value(cpu, op1, (c_word)(op1_val / op2_val));
-	cpu->reg.a = op1_val % op2_val;
+	cpu->context->reg.a = op1_val % op2_val;
 }
 
 void SHOW(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
@@ -121,10 +123,11 @@ void SHOW(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 
 void TEST(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
+	assert(cpu->context != NULL);
 	DEBUG_PRINTF("TEST\n");
 	c_word value = operand_read_value(cpu, operand);
 
-	cpu->reg.flags = 0;
+	cpu->context->reg.flags = 0;
 
 	if(value == 0)
 	{
@@ -138,10 +141,12 @@ void TEST(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 
 void STEST(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 {
+	assert(cpu->context != NULL);
 	DEBUG_PRINTF("STEST\n");
+
 	c_sword value = operand_read_value(cpu, operand);
 
-	cpu->reg.flags = 0;
+	cpu->context->reg.flags = 0;
 
 	if(value == 0)
 	{
@@ -159,11 +164,13 @@ void STEST(cpu_t* cpu, operand_t const* operand, operand_t const* unused)
 
 void CMP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
+	assert(cpu->context != NULL);
 	DEBUG_PRINTF("CMP\n");
+
 	c_word value1 = operand_read_value(cpu, op1);
 	c_word value2 = operand_read_value(cpu, op2);
 
-	cpu->reg.flags = 0;
+	cpu->context->reg.flags = 0;
 
 	if(value1 == value2)
 	{
@@ -181,11 +188,13 @@ void CMP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 
 void SCMP(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 {
+	assert(cpu->context != NULL);
 	DEBUG_PRINTF("SCMP\n");
+
 	c_sword value1 = operand_read_value(cpu, op1);
 	c_sword value2 = operand_read_value(cpu, op2);
 
-	cpu->reg.flags = 0;
+	cpu->context->reg.flags = 0;
 
 	if(value1 == value2)
 	{
