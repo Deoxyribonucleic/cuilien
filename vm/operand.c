@@ -71,7 +71,7 @@ void set_operand_register_value(cpu_t* cpu, operand_t const* op, c_word value)
 }
 
 // Lets the compiler take care of any big-/ little endian issues
-inline void sized_copy_by_cast(void* dst, size_t dst_size, void const* src, size_t src_size)
+static inline void sized_copy_by_cast(void* dst, size_t dst_size, void const* src, size_t src_size)
 {	
 	c_word value;
 	

@@ -40,8 +40,9 @@ typedef void (*cpu_function)(cpu_handle, c_byte* op1, c_byte* op2, size_t size);
 cpu_handle cpu_init();
 void cpu_free(cpu_handle cpu);
 
+void cpu_step(cpu_handle cpu);
 void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction);
-void cpu_read_instruction(cpu_handle cpu, c_addr address, struct cpu_instruction* output);
+void cpu_fetch(cpu_handle cpu, c_addr address, struct cpu_instruction* output);
 
 bool cpu_get_flag(cpu_handle cpu, int flag);
 void cpu_set_flag(cpu_handle cpu, int flag);

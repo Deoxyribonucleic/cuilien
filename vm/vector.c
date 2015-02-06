@@ -7,12 +7,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-inline size_t calc_capacity(size_t size)
+static inline size_t calc_capacity(size_t size)
 {
 	return ((size - 1) / VECTOR_CHUNK + 1) * VECTOR_CHUNK;
 }
 
-inline size_t min(size_t a, size_t b)
+static inline size_t min(size_t a, size_t b)
 {
 	return (a < b ? a : b);
 }

@@ -1,4 +1,4 @@
-env = Environment(CPPPATH=["."])
+env = Environment(CPPPATH=["."], CCFLAGS="-std=c99")
 
 
 # Source section

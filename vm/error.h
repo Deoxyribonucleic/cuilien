@@ -19,9 +19,9 @@
 
 char* error_tostring(int code);
 void error_print(int code);
-inline void error_clear();
+void error_clear();
 
-inline void fatal(const char* message);
+void fatal(const char* message);
 
 extern int error_last;
 

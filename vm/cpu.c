@@ -45,12 +45,12 @@ void cpu_step(cpu_handle cpu)
 	assert(cpu->context != NULL);
 
 	struct cpu_instruction instruction;
-	cpu_read_instruction(cpu, cpu->context->reg.ip, &instruction);
+	cpu_fetch(cpu, cpu->context->reg.ip, &instruction);
 	cpu->context->reg.ip += INSTRUCTION_LENGTH;
 	cpu_execute(cpu, &instruction);
 }
 
-void cpu_read_instruction(cpu_handle cpu, c_addr address, struct cpu_instruction* output)
+void cpu_fetch(cpu_handle cpu, c_addr address, struct cpu_instruction* output)
 {
 	assert(cpu != NULL);
 	assert(cpu->context != NULL);
