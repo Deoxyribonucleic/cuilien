@@ -6,3 +6,4 @@ bin
 .sconsign.dblite
 *.cx
 build/
+.ycm_extra_conf.py
