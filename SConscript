@@ -13,6 +13,7 @@ vm/page.c
 vm/util.c
 vm/vector.c
 vm/vm.c
+vm/scheduler.c
 """)
 
 vmtest_sources = Split("""
