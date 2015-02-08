@@ -69,8 +69,12 @@ void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction)
 {
 	assert(cpu != NULL);
 
-	assert(instruction->operation < INSTRUCTION_VECTOR_LENGTH);
-	assert(instruction_vector[instruction->operation] != 0);
+	if(instruction->operation >= INSTRUCTION_VECTOR_LENGTH ||
+			instruction_vector[instruction->operation] == 0)
+	{
+		DEBUG_PRINTF("[cpu] invalid opcode: %04x\n", instruction->operation);
+		return;
+	}
 
 	instruction_vector[instruction->operation](cpu, &instruction->op1, &instruction->op2);
 }
