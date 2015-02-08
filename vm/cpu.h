@@ -3,6 +3,7 @@
 
 #include "mem.h"
 #include "operand.h"
+#include "interrupt.h"
 
 #define INSTRUCTION_LENGTH 12
 
@@ -25,6 +26,7 @@ typedef struct context
 typedef struct cpu
 {
 	context_t* context;
+	interrupt_vector_table_t ivt;
 	bool halted;
 } cpu_t;
 

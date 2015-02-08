@@ -23,9 +23,13 @@ void HALT(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
 	cpu->halted = true;
 }
 
-void INT(cpu_t* cpu, operand_t const* op1, operand_t const* op2)
+void INT(cpu_t* cpu, operand_t const* index_operand, operand_t const* op2)
 {
 	DEBUG_PRINTF("INT\n");
+	c_byte index = operand_read_value(cpu, index_operand);
+
+	if(index < cpu->ivt.length)
+		cpu->ivt.handlers[index](cpu);
 }
 
 void MOV(cpu_t* cpu, operand_t const* dest, operand_t const* src)

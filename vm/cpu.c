@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <memory.h>
 
 cpu_handle cpu_init()
 {
@@ -27,6 +28,7 @@ cpu_handle cpu_init()
 	}
 
 	cpu->context = NULL;
+	memset(&cpu->ivt, 0, sizeof(interrupt_vector_table_t));
 
 	cpu->halted = true;
 

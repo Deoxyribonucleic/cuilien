@@ -9,10 +9,16 @@
 #include "vm/scheduler.h"
 #include "vm/process.h"
 #include "vm/debug.h"
+#include "vm/interrupt.h"
 
 #include <stdlib.h>
 #include <string.h>
 
+
+void test_interrupt(cpu_t* cpu)
+{
+	printf("Test interrupt reporting in :) Value of A: %d", cpu->context->reg.a);
+}
 
 void print_vector_info(vector_t* vector)
 {
@@ -61,6 +67,11 @@ int main(int argc, char** args)
 		error_print(error_last);
 		return 1;
 	}
+
+	// Build interrupt vector table
+	interrupt_handler_t interrupt_handlers[] = { test_interrupt };
+	cpu->ivt.handlers = interrupt_handlers;
+	cpu->ivt.length = 1;
 
 	scheduler_t* scheduler = scheduler_init(cpu);
 	void* process_addr = &processes[0];
