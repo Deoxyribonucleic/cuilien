@@ -27,5 +27,6 @@ vmtest_objects = env.Object(source = vmtest_sources)
 
 
 # Target section
-vmtest = env.Program(target = "vmtestbin", source = [vm_objects, vmtest_objects])
+lib = env.Library(target = "libcuilien", source = [vm_objects])
+vmtest = env.Program(target = "vmtestbin", source = [vmtest_objects], LIBS = [lib])
 
