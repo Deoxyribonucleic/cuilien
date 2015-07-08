@@ -211,3 +211,28 @@ size_t c_mem_load_file(c_mem_handle memory, char const* filename, c_addr start)
 	return bytes_written;
 }
 
+size_t c_mem_load(c_mem_handle memory, char const* from, size_t length, c_addr start)
+{
+	size_t i;
+	for(i = 0; i < length; ++i)
+	{
+		c_mem_write_byte(memory, start + i, from[i]);
+
+		if(c_error_last == C_ERR_MEM_LIMIT_REACHED)
+			break;
+	}
+
+	return i;
+}
+
+size_t c_mem_dump(c_mem_handle memory, char* to, size_t length, c_addr start)
+{
+	size_t i;
+	for(i = 0; i < length; ++i)
+	{
+		to[i] = c_mem_read_byte(memory, start + i, false);
+	}
+
+	return i;
+}
+
