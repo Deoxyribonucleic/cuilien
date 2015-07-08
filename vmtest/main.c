@@ -1,7 +1,5 @@
 #include <stdio.h>
 
-#include "vm/vm.h"
-#include "vm/args.h"
 #include "vm/mem.h"
 #include "vm/error.h"
 #include "vm/cpu.h"
@@ -36,10 +34,9 @@ void print_vector_info(c_vector_t* vector)
 
 int main(int argc, char** args)
 {
-	struct args_info arguments;
-	args_parse(args, argc, &arguments);
+	char* const program = "test.cx";
 
-	printf("Program: %s\n", arguments.program);
+	printf("Program: %s\n", program);
 
 	int error;
 
@@ -79,10 +76,6 @@ int main(int argc, char** args)
 	process_addr = &processes[1];
 	c_vector_push_back(&scheduler->processes, &process_addr);
 
-	if((error = vm_init(&arguments)))
-		c_error_print(error);
-
-
 	c_page_info_t shared_info = { C_PAGE_WRITE, false };
 	c_byte* shared_mem = malloc(sizeof(c_byte) * C_PAGE_SIZE);
 	//page_map(&memory->page_table, 0, &shared_info, shared_mem);
@@ -90,8 +83,8 @@ int main(int argc, char** args)
 
 	// Load test program into memory
 	c_addr programStart = 0xff000000;
-	c_mem_load_file(processes[0].context.memory, arguments.program, programStart);
-	c_mem_load_file(processes[1].context.memory, arguments.program, programStart);
+	c_mem_load_file(processes[0].context.memory, program, programStart);
+	c_mem_load_file(processes[1].context.memory, program, programStart);
 
 
 	// load brainfuck program into memory at 0xffe00000

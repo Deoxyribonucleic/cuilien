@@ -3,7 +3,6 @@ env = Environment(CPPPATH=["."], CCFLAGS="-std=c99")
 
 # Source section
 vm_sources = Split("""
-vm/args.c
 vm/cpu.c
 vm/error.c
 vm/instr.c
@@ -12,7 +11,6 @@ vm/operand.c
 vm/page.c
 vm/util.c
 vm/vector.c
-vm/vm.c
 vm/scheduler.c
 """)
 
