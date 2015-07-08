@@ -7,27 +7,27 @@
 #include "page.h"
 #include "types.h"
 
-typedef struct memory
+typedef struct
 {
-	vector_t page_table;
+	c_vector_t page_table;
 	size_t max_size, used;
-} memory_t;
-typedef memory_t* mem_handle;
+} c_memory_t;
+typedef c_memory_t* c_mem_handle;
 
-memory_t* mem_init(size_t size);
-void mem_free(memory_t* memory);
+c_memory_t* c_mem_init(size_t size);
+void c_mem_free(c_memory_t* memory);
 
-c_long mem_read_long(memory_t* memory, c_addr address, bool exec);
-c_short mem_read_short(memory_t* memory, c_addr address, bool exec);
-c_byte mem_read_byte(memory_t* memory, c_addr address, bool exec);
+c_long c_mem_read_long(c_memory_t* memory, c_addr address, bool exec);
+c_short c_mem_read_short(c_memory_t* memory, c_addr address, bool exec);
+c_byte c_mem_read_byte(c_memory_t* memory, c_addr address, bool exec);
 
-void mem_write_long(memory_t* memory, c_addr address, c_long data);
-void mem_write_short(memory_t* memory, c_addr address, c_short data);
-void mem_write_byte(memory_t* memory, c_addr address, c_byte data);
+void c_mem_write_long(c_memory_t* memory, c_addr address, c_long data);
+void c_mem_write_short(c_memory_t* memory, c_addr address, c_short data);
+void c_mem_write_byte(c_memory_t* memory, c_addr address, c_byte data);
 
-void mem_read_value(memory_t* memory, c_addr address, c_byte* out, size_t length, bool exec);
-void mem_write_value(memory_t* memory, c_addr address, c_byte const* value, size_t length);
+void c_mem_read_value(c_memory_t* memory, c_addr address, c_byte* out, size_t length, bool exec);
+void c_mem_write_value(c_memory_t* memory, c_addr address, c_byte const* value, size_t length);
 
-size_t mem_load_file(mem_handle memory, char const* filename, c_addr start);
+size_t c_mem_load_file(c_mem_handle memory, char const* filename, c_addr start);
 
 #endif

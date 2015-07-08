@@ -7,13 +7,13 @@
 #include <stdio.h>
 
 
-scheduler_t* scheduler_init(cpu_t* cpu)
+c_scheduler_t* c_scheduler_init(c_cpu_t* cpu)
 {
 	assert(cpu != NULL);
 	
-	scheduler_t* scheduler = malloc(sizeof(scheduler_t));
+	c_scheduler_t* scheduler = malloc(sizeof(c_scheduler_t));
 
-	vector_create(sizeof(process_t*), 0, &scheduler->processes);
+	c_vector_create(sizeof(c_process_t*), 0, &scheduler->processes);
 	scheduler->cpu = cpu;
 
 	scheduler->ticks_since_ctx_switch = 0;
@@ -22,13 +22,13 @@ scheduler_t* scheduler_init(cpu_t* cpu)
 	return scheduler;
 }
 
-void scheduler_free(scheduler_t* scheduler)
+void c_scheduler_free(c_scheduler_t* scheduler)
 {
 	assert(scheduler != NULL);
 	free(scheduler);
 }
 
-void scheduler_tick(scheduler_t* scheduler)
+void c_scheduler_tick(c_scheduler_t* scheduler)
 {
 	assert(scheduler != NULL);
 	assert(scheduler->cpu != NULL);
@@ -40,7 +40,7 @@ void scheduler_tick(scheduler_t* scheduler)
 		scheduler->current_process_index =
 			(scheduler->current_process_index + 1) % scheduler->processes.size;
 
-		vector_get(&scheduler->processes,
+		c_vector_get(&scheduler->processes,
 				scheduler->current_process_index,
 				&scheduler->cpu->context);
 

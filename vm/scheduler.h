@@ -4,18 +4,18 @@
 #include "cpu.h"
 #include "vector.h"
 
-typedef struct scheduler
+typedef struct c_scheduler
 {
-	cpu_t* cpu;
-	vector_t processes;
+	c_cpu_t* cpu;
+	c_vector_t processes;
 	int ticks_since_ctx_switch;
 	size_t current_process_index;
-} scheduler_t;
+} c_scheduler_t;
 
-scheduler_t* scheduler_init(cpu_t* cpu);
-void scheduler_free(scheduler_t* scheduler);
+c_scheduler_t* c_scheduler_init(c_cpu_t* cpu);
+void c_scheduler_free(c_scheduler_t* scheduler);
 
-void scheduler_tick(scheduler_t* scheduler);
+void c_scheduler_tick(c_scheduler_t* scheduler);
 
 #endif
 

@@ -15,20 +15,20 @@
 #include <string.h>
 
 
-void test_interrupt(cpu_t* cpu)
+void test_interrupt(c_cpu_t* cpu)
 {
 	printf("Test interrupt reporting in :) Value of A: %d", cpu->context->reg.a);
 }
 
-void print_vector_info(vector_t* vector)
+void print_vector_info(c_vector_t* vector)
 {
-	printf("Element size: %d | Size: %d | Capacity: %d\n", vector->element_size, vector->size, vector->capacity);
+	printf("Element size: %lu | Size: %lu | Capacity: %lu\n", vector->element_size, vector->size, vector->capacity);
 	int i;
 	printf("Listing:\n");
 	for(i=0; i<vector->size; ++i)
 	{
 		char* string;
-		vector_get(vector, i, &string);
+		c_vector_get(vector, i, &string);
 		printf("* %p: %s\n", string, string);
 	}
 	printf("---\n");
@@ -44,59 +44,59 @@ int main(int argc, char** args)
 	int error;
 
 	// create two processes
-	process_t processes[2];
-	memset(processes, 0, sizeof(process_t) * 2);
+	c_process_t processes[2];
+	memset(processes, 0, sizeof(c_process_t) * 2);
 
-	processes[0].context.memory = mem_init(1024*1024*10); // 10 MB
-	if(error_last)
+	processes[0].context.memory = c_mem_init(1024*1024*10); // 10 MB
+	if(c_error_last)
 	{
-		error_print(error_last);
+		c_error_print(c_error_last);
 		return 1;
 	}
 
-	processes[1].context.memory = mem_init(1024*1024*10); // 10 MB
-	if(error_last)
+	processes[1].context.memory = c_mem_init(1024*1024*10); // 10 MB
+	if(c_error_last)
 	{
-		error_print(error_last);
+		c_error_print(c_error_last);
 		return 1;
 	}
 
-	cpu_handle cpu = cpu_init();
-	if(error_last)
+	c_cpu_handle cpu = c_cpu_init();
+	if(c_error_last)
 	{
-		error_print(error_last);
+		c_error_print(c_error_last);
 		return 1;
 	}
 
 	// Build interrupt vector table
-	interrupt_handler_t interrupt_handlers[] = { test_interrupt };
+	c_interrupt_handler_t interrupt_handlers[] = { test_interrupt };
 	cpu->ivt.handlers = interrupt_handlers;
 	cpu->ivt.length = 1;
 
-	scheduler_t* scheduler = scheduler_init(cpu);
+	c_scheduler_t* scheduler = c_scheduler_init(cpu);
 	void* process_addr = &processes[0];
-	vector_push_back(&scheduler->processes, &process_addr);
+	c_vector_push_back(&scheduler->processes, &process_addr);
 	process_addr = &processes[1];
-	vector_push_back(&scheduler->processes, &process_addr);
+	c_vector_push_back(&scheduler->processes, &process_addr);
 
 	if((error = vm_init(&arguments)))
-		error_print(error);
+		c_error_print(error);
 
 
-	page_info_t shared_info = { PAGE_WRITE, false };
+	c_page_info_t shared_info = { C_PAGE_WRITE, false };
 	c_byte* shared_mem = malloc(sizeof(c_byte) * C_PAGE_SIZE);
 	//page_map(&memory->page_table, 0, &shared_info, shared_mem);
 
 
 	// Load test program into memory
 	c_addr programStart = 0xff000000;
-	mem_load_file(processes[0].context.memory, arguments.program, programStart);
-	mem_load_file(processes[1].context.memory, arguments.program, programStart);
+	c_mem_load_file(processes[0].context.memory, arguments.program, programStart);
+	c_mem_load_file(processes[1].context.memory, arguments.program, programStart);
 
 
 	// load brainfuck program into memory at 0xffe00000
-	mem_load_file(processes[0].context.memory, "vmtest/programs/99bottles.bf", 0xffe00000);
-	mem_load_file(processes[1].context.memory, "vmtest/programs/99bottles.bf", 0xffe00000);
+	c_mem_load_file(processes[0].context.memory, "vmtest/programs/99bottles.bf", 0xffe00000);
+	c_mem_load_file(processes[1].context.memory, "vmtest/programs/99bottles.bf", 0xffe00000);
 
 	// Initialize instruction pointers
 	processes[0].context.reg.ip = programStart;
@@ -108,18 +108,19 @@ int main(int argc, char** args)
 	cpu->halted = false;
 	while(!cpu->halted)
 	{
-		scheduler_tick(scheduler);
+		c_scheduler_tick(scheduler);
 
-		cpu_step(cpu);
+		c_cpu_step(cpu);
 		DEBUG_PRINTF("--\n");
 	}
 
 	free(shared_mem);
 
-	scheduler_free(scheduler);
-	cpu_free(cpu);
-	mem_free(processes[0].context.memory);
-	mem_free(processes[1].context.memory);
+	c_scheduler_free(scheduler);
+	c_cpu_free(cpu);
+	c_mem_free(processes[0].context.memory);
+	c_mem_free(processes[1].context.memory);
 
 	return 0;
 }
+

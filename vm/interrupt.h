@@ -3,14 +3,14 @@
 
 #include <memory.h>
 
-struct cpu;
-typedef void(*interrupt_handler_t)(struct cpu* cpu);
+struct c_cpu;
+typedef void(*c_interrupt_handler_t)(struct c_cpu* cpu);
 
-typedef struct interrupt_vector_table
+typedef struct c_interrupt_vector_table
 {
-	interrupt_handler_t* handlers;
+	c_interrupt_handler_t* handlers;
 	size_t length;
-} interrupt_vector_table_t;
+} c_interrupt_vector_table_t;
 
 #endif
 

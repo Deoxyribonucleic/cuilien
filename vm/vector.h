@@ -3,30 +3,30 @@
 
 #include <stddef.h>
 
-#define VECTOR_CHUNK	4
+#define C_VECTOR_CHUNK	4
 
-struct vector
+struct c_vector
 {
 	size_t size, capacity;
 	size_t element_size;
 	void* data;
 };
-typedef struct vector vector_t;
+typedef struct c_vector c_vector_t;
 
-void vector_create(size_t element_size, size_t initial_size, vector_t* output);
-void vector_free(vector_t* vector);
+void c_vector_create(size_t element_size, size_t initial_size, c_vector_t* output);
+void c_vector_free(c_vector_t* vector);
 
-void vector_resize(vector_t* vector, size_t new_size);
+void c_vector_resize(c_vector_t* vector, size_t new_size);
 
-void vector_push_back(vector_t* vector, void* new_element);
-void vector_pop_back(vector_t* vector);
+void c_vector_push_back(c_vector_t* vector, void* new_element);
+void c_vector_pop_back(c_vector_t* vector);
 
-void vector_insert(vector_t* vector, void* new_element, size_t at_index);
-void vector_remove(vector_t* vector, size_t index);
+void c_vector_insert(c_vector_t* vector, void* new_element, size_t at_index);
+void c_vector_remove(c_vector_t* vector, size_t index);
 
-void vector_set(vector_t* vector, size_t index, void* element);
-void vector_get(vector_t* vector, size_t index, void* element_out);
+void c_vector_set(c_vector_t* vector, size_t index, void* element);
+void c_vector_get(c_vector_t* vector, size_t index, void* element_out);
 
-void* vector_resolve(vector_t* vector, size_t index);
+void* c_vector_resolve(c_vector_t* vector, size_t index);
 
 #endif

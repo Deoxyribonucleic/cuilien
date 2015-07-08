@@ -9,32 +9,32 @@
 
 #define C_PAGE_SIZE  1024
 
-#define PAGE_READ    1
-#define PAGE_WRITE   2
-#define PAGE_EXEC    4
+#define C_PAGE_READ    1
+#define C_PAGE_WRITE   2
+#define C_PAGE_EXEC    4
 
-#define PAGE_ALIGN(x)	(x - (x % C_PAGE_SIZE))
+#define C_PAGE_ALIGN(x)	(x - (x % C_PAGE_SIZE))
 
-typedef uint32_t page_id_t;
+typedef uint32_t c_page_id_t;
 
-typedef struct page_info
+typedef struct c_page_info
 {
 	c_byte perms;
 	bool owned;
-} page_info_t;
+} c_page_info_t;
 
-typedef struct page
+typedef struct c_page
 {
-	page_id_t id;
-	page_info_t info;
+	c_page_id_t id;
+	c_page_info_t info;
 	c_byte* mem;
-} page_t;
+} c_page_t;
 
-vector_t page_create_table();
-c_byte* page_resolve(vector_t* table, c_addr virtual_address, c_byte required_perms);
-void page_map(vector_t* table, c_addr virtual_address, page_info_t const* info, c_byte* physical_address);
-page_t* page_find(vector_t* table, page_id_t id);
+c_vector_t c_page_create_table();
+c_byte* c_page_resolve(c_vector_t* table, c_addr virtual_address, c_byte required_perms);
+void c_page_map(c_vector_t* table, c_addr virtual_address, c_page_info_t const* info, c_byte* physical_address);
+c_page_t* c_page_find(c_vector_t* table, c_page_id_t id);
 
-page_id_t page_get_id(c_addr virtual_address);
+c_page_id_t c_page_get_id(c_addr virtual_address);
 
 #endif

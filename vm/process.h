@@ -3,9 +3,9 @@
 
 #include "cpu.h"
 
-typedef struct process
+typedef struct c_process
 {
-	context_t context;
-} process_t;
+	c_context_t context;
+} c_process_t;
 
 #endif

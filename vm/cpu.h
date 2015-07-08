@@ -13,54 +13,54 @@
 #define FLAG_LT     8
 #define FLAG_ERROR  16
 
-typedef struct context
+typedef struct c_context
 {
 	struct
 	{
 		c_reg a, b, c, d, ip, sp, flags;
 	} reg;
 
-	memory_t* memory;
-} context_t;
+	c_memory_t* memory;
+} c_context_t;
 
-typedef struct cpu
+typedef struct c_cpu
 {
-	context_t* context;
-	interrupt_vector_table_t ivt;
+	c_context_t* context;
+	c_interrupt_vector_table_t ivt;
 	bool halted;
-} cpu_t;
+} c_cpu_t;
 
-struct cpu_instruction
+struct c_cpu_instruction
 {
 	c_short operation;
-	operand_t op1, op2;
+	c_operand_t op1, op2;
 };
 
-typedef cpu_t* cpu_handle;
-typedef void (*cpu_function)(cpu_handle, c_byte* op1, c_byte* op2, size_t size);
+typedef c_cpu_t* c_cpu_handle;
+typedef void (*c_cpu_function)(c_cpu_handle, c_byte* op1, c_byte* op2, size_t size);
 
-cpu_handle cpu_init();
-void cpu_free(cpu_handle cpu);
+c_cpu_handle c_cpu_init();
+void c_cpu_free(c_cpu_handle cpu);
 
-void cpu_step(cpu_handle cpu);
-void cpu_execute(cpu_handle cpu, struct cpu_instruction* instruction);
-void cpu_fetch(cpu_handle cpu, c_addr address, struct cpu_instruction* output);
+void c_cpu_step(c_cpu_handle cpu);
+void c_cpu_execute(c_cpu_handle cpu, struct c_cpu_instruction* instruction);
+void c_cpu_fetch(c_cpu_handle cpu, c_addr address, struct c_cpu_instruction* output);
 
-bool cpu_get_flag(cpu_handle cpu, int flag);
-void cpu_set_flag(cpu_handle cpu, int flag);
-void cpu_clear_flag(cpu_handle cpu, int flag);
+bool c_cpu_get_flag(c_cpu_handle cpu, int flag);
+void c_cpu_set_flag(c_cpu_handle cpu, int flag);
+void c_cpu_clear_flag(c_cpu_handle cpu, int flag);
 
-void cpu_jump(cpu_handle cpu, c_addr target);
+void c_cpu_jump(c_cpu_handle cpu, c_addr target);
 
-void cpu_push_long(cpu_handle cpu, c_long value);
-void cpu_push_short(cpu_handle cpu, c_short value);
-void cpu_push_byte(cpu_handle cpu, c_byte value);
+void c_cpu_push_long(c_cpu_handle cpu, c_long value);
+void c_cpu_push_short(c_cpu_handle cpu, c_short value);
+void c_cpu_push_byte(c_cpu_handle cpu, c_byte value);
 
-c_long cpu_pop_long(cpu_handle cpu);
-c_short cpu_pop_short(cpu_handle cpu);
-c_byte cpu_pop_byte(cpu_handle cpu);
+c_long c_cpu_pop_long(c_cpu_handle cpu);
+c_short c_cpu_pop_short(c_cpu_handle cpu);
+c_byte c_cpu_pop_byte(c_cpu_handle cpu);
 
-void cpu_call(cpu_handle cpu, c_addr subroutine);
-void cpu_return(cpu_handle);
+void c_cpu_call(c_cpu_handle cpu, c_addr subroutine);
+void c_cpu_return(c_cpu_handle);
 
 #endif

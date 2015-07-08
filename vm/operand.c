@@ -8,62 +8,62 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-size_t operand_get_size(operand_t const* op)
+size_t c_operand_get_size(c_operand_t const* op)
 {
-	return (op->flags & PF_SIZE_MASK) + 1;
+	return (op->flags & C_PF_SIZE_MASK) + 1;
 }
 
-size_t operand_get_operation_size(operand_t const* op1, operand_t const* op2)
+size_t c_operand_get_operation_size(c_operand_t const* op1, c_operand_t const* op2)
 {
-	return min_size(operand_get_size(op1), operand_get_size(op2));
+	return min_size(c_operand_get_size(op1), c_operand_get_size(op2));
 }
 
-c_word get_operand_register_value(cpu_t* cpu, operand_t const* op)
+c_word c_get_operand_register_value(c_cpu_t* cpu, c_operand_t const* op)
 {
 	switch(op->value)
 	{
-	case OP_REG_A:
+	case C_OP_REG_A:
 		return cpu->context->reg.a;
-	case OP_REG_B:
+	case C_OP_REG_B:
 		return cpu->context->reg.b;
-	case OP_REG_C:
+	case C_OP_REG_C:
 		return cpu->context->reg.c;
-	case OP_REG_D:
+	case C_OP_REG_D:
 		return cpu->context->reg.d;
-	case OP_REG_IP:
+	case C_OP_REG_IP:
 		return cpu->context->reg.ip;
-	case OP_REG_SP:
+	case C_OP_REG_SP:
 		return cpu->context->reg.sp;
-	case OP_REG_FLAGS:
+	case C_OP_REG_FLAGS:
 		return cpu->context->reg.flags;
 	default:
 		return 0x00000000;
 	}
 }
 
-void set_operand_register_value(cpu_t* cpu, operand_t const* op, c_word value)
+void c_set_operand_register_value(c_cpu_t* cpu, c_operand_t const* op, c_word value)
 {
 	switch(op->value)
 	{
-	case OP_REG_A:
+	case C_OP_REG_A:
 		cpu->context->reg.a = value;
 		break;
-	case OP_REG_B:
+	case C_OP_REG_B:
 		cpu->context->reg.b = value;
 		break;
-	case OP_REG_C:
+	case C_OP_REG_C:
 		cpu->context->reg.c = value;
 		break;
-	case OP_REG_D:
+	case C_OP_REG_D:
 		cpu->context->reg.d = value;
 		break;
-	case OP_REG_IP:
+	case C_OP_REG_IP:
 		cpu->context->reg.ip = value;
 		break;
-	case OP_REG_SP:
+	case C_OP_REG_SP:
 		cpu->context->reg.sp = value;
 		break;
-	case OP_REG_FLAGS:
+	case C_OP_REG_FLAGS:
 		cpu->context->reg.flags = value;
 		break;
 	default:;
@@ -104,41 +104,41 @@ static inline void sized_copy_by_cast(void* dst, size_t dst_size, void const* sr
 	}
 }
 
-void read_register_pointer(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
+void read_register_pointer(c_cpu_t* cpu, c_operand_t const* op, c_byte* out, size_t size)
 {
-	c_addr pointer = get_operand_register_value(cpu, op);
-	mem_read_value(cpu->context->memory, pointer, out, size, false);
+	c_addr pointer = c_get_operand_register_value(cpu, op);
+	c_mem_read_value(cpu->context->memory, pointer, out, size, false);
 }
 
-void read_register(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
+void read_register(c_cpu_t* cpu, c_operand_t const* op, c_byte* out, size_t size)
 {
-	c_word value = get_operand_register_value(cpu, op);
+	c_word value = c_get_operand_register_value(cpu, op);
 	sized_copy_by_cast(out, size, &value, size);
 }
 
-void read_value_pointer(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
+void read_value_pointer(c_cpu_t* cpu, c_operand_t const* op, c_byte* out, size_t size)
 {
-	mem_read_value(cpu->context->memory, op->value, out, size, false);
+	c_mem_read_value(cpu->context->memory, op->value, out, size, false);
 }
 
-void read_value(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
+void read_value(c_cpu_t* cpu, c_operand_t const* op, c_byte* out, size_t size)
 {
 	sized_copy_by_cast(out, size, &op->value, size);
 }
 
-void operand_read(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
+void c_operand_read(c_cpu_t* cpu, c_operand_t const* op, c_byte* out, size_t size)
 {
-	error_clear();
+	c_error_clear();
 	
-	if(op->flags & PF_REGISTER && op->flags & PF_DEREFERENCE)
+	if(op->flags & C_PF_REGISTER && op->flags & C_PF_DEREFERENCE)
 	{
 		read_register_pointer(cpu, op, out, size);
 	}
-	else if(op->flags & PF_REGISTER)
+	else if(op->flags & C_PF_REGISTER)
 	{
 		read_register(cpu, op, out, size);
 	}
-	else if(op->flags & PF_DEREFERENCE)
+	else if(op->flags & C_PF_DEREFERENCE)
 	{
 		read_value_pointer(cpu, op, out, size);
 	}
@@ -148,44 +148,44 @@ void operand_read(cpu_t* cpu, operand_t const* op, c_byte* out, size_t size)
 	}
 }
 
-c_word operand_read_value(cpu_t* cpu, operand_t const* op)
+c_word c_operand_read_value(c_cpu_t* cpu, c_operand_t const* op)
 {
 	c_word value = 0;
-	operand_read(cpu, op, (c_byte*)&value, operand_get_size(op));
+	c_operand_read(cpu, op, (c_byte*)&value, c_operand_get_size(op));
 	return value;
 }
 
-void write_register_pointer(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
+void write_register_pointer(c_cpu_t* cpu, c_operand_t const* op, c_byte const* data, size_t size)
 {
-	c_addr pointer = get_operand_register_value(cpu, op);
-	mem_write_value(cpu->context->memory, pointer, data, size);
+	c_addr pointer = c_get_operand_register_value(cpu, op);
+	c_mem_write_value(cpu->context->memory, pointer, data, size);
 }
 
-void write_register(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
+void write_register(c_cpu_t* cpu, c_operand_t const* op, c_byte const* data, size_t size)
 {
 	c_word value;
 	sized_copy_by_cast(&value, sizeof(value), data, size);
-	set_operand_register_value(cpu, op, value);
+	c_set_operand_register_value(cpu, op, value);
 }
 
-void write_value_pointer(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
+void write_value_pointer(c_cpu_t* cpu, c_operand_t const* op, c_byte const* data, size_t size)
 {
-	mem_write_value(cpu->context->memory, op->value, data, size);
+	c_mem_write_value(cpu->context->memory, op->value, data, size);
 }
 
-void operand_write(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t size)
+void c_operand_write(c_cpu_t* cpu, c_operand_t const* op, c_byte const* data, size_t size)
 {
-	error_clear();
+	c_error_clear();
 	
-	if(op->flags & PF_REGISTER && op->flags & PF_DEREFERENCE)
+	if(op->flags & C_PF_REGISTER && op->flags & C_PF_DEREFERENCE)
 	{
 		write_register_pointer(cpu, op, data, size);
 	}
-	else if(op->flags & PF_REGISTER)
+	else if(op->flags & C_PF_REGISTER)
 	{
 		write_register(cpu, op, data, size);
 	}
-	else if(op->flags & PF_DEREFERENCE)
+	else if(op->flags & C_PF_DEREFERENCE)
 	{
 		write_value_pointer(cpu, op, data, size);
 	}
@@ -195,7 +195,8 @@ void operand_write(cpu_t* cpu, operand_t const* op, c_byte const* data, size_t s
 	}
 }
 
-void operand_write_value(cpu_t* cpu, operand_t const* op, c_word value)
+void c_operand_write_value(c_cpu_t* cpu, c_operand_t const* op, c_word value)
 {
-	operand_write(cpu, op, (c_byte*)&value, operand_get_size(op));
+	c_operand_write(cpu, op, (c_byte*)&value, c_operand_get_size(op));
 }
+

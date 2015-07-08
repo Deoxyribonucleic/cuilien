@@ -8,34 +8,35 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
 #error Cuilien currently requires that the host machine is little endian. This machine is not, and thus it cannot run Cuilien.
 #endif
 
-memory_t* mem_init(size_t size)
+c_memory_t* c_mem_init(size_t size)
 {
-	error_clear();
+	c_error_clear();
 
-	memory_t* memory = malloc(sizeof(memory_t));
-	memory->page_table = page_create_table();
-	memory->max_size = PAGE_ALIGN(size);
+	c_memory_t* memory = malloc(sizeof(c_memory_t));
+	memory->page_table = c_page_create_table();
+	memory->max_size = C_PAGE_ALIGN(size);
 	memory->used = 0;
 
 	if(size != memory->max_size)
 	{
-		printf("[memory] warning: effective memory limit: %d kB (%d B is not page aligned)\n", memory->max_size / 1024, size);
+		printf("[memory] warning: effective memory limit: %lu kB (%lu B is not page aligned)\n", memory->max_size / 1024, size);
 	}
 
 	return memory;
 }
 
-void mem_free(memory_t* memory)
+void c_mem_free(c_memory_t* memory)
 {
 	int i, pages_freed = 0;
 	for(i = 0; i<memory->page_table.size; ++i)
 	{
-		page_t* page = vector_resolve(&memory->page_table, i);
+		c_page_t* page = c_vector_resolve(&memory->page_table, i);
 		if(page->info.owned)
 		{
 			free(page->mem);
@@ -44,60 +45,60 @@ void mem_free(memory_t* memory)
 			++pages_freed;
 		}
 	}
-	printf("[memory] %d/%d virtual memory pages freed\n", pages_freed, memory->page_table.size);
-	vector_free(&memory->page_table);
+	printf("[memory] %d/%lu virtual memory pages freed\n", pages_freed, memory->page_table.size);
+	c_vector_free(&memory->page_table);
 	free(memory);
 }
 
-void mem_pagefault(memory_t* memory, c_addr address)
+void c_mem_pagefault(c_memory_t* memory, c_addr address)
 {
-	error_clear();
+	c_error_clear();
 
-	printf("[memory] pagefault: paging 0x%08x\n", PAGE_ALIGN(address));
+	printf("[memory] pagefault: paging 0x%08x\n", C_PAGE_ALIGN(address));
 
 	if(memory->used + C_PAGE_SIZE > memory->max_size)
 	{
-		error_last = ERR_MEM_LIMIT_REACHED;
+		c_error_last = C_ERR_MEM_LIMIT_REACHED;
 		return;
 	}
 
-	page_info_t new_page_info;
+	c_page_info_t new_page_info;
 	new_page_info.owned = true;
-	new_page_info.perms = PAGE_READ | PAGE_WRITE | PAGE_EXEC;
+	new_page_info.perms = C_PAGE_READ | C_PAGE_WRITE | C_PAGE_EXEC;
 
 	c_byte* mem = malloc(sizeof(c_byte) * C_PAGE_SIZE);
 	if(mem == NULL)
 	{
-		error_last = ERR_MEM_HOST_OOM;
+		c_error_last = C_ERR_MEM_HOST_OOM;
 		return;
 	}
 
-	page_map(&memory->page_table, address, &new_page_info, mem);
+	c_page_map(&memory->page_table, address, &new_page_info, mem);
 	memory->used += C_PAGE_SIZE;
 }
 
-c_byte* mem_resolve_address(memory_t* memory, c_addr address, c_byte required_perms)
+c_byte* c_mem_resolve_address(c_memory_t* memory, c_addr address, c_byte required_perms)
 {
-	error_clear();
+	c_error_clear();
 
 	if(address == C_NULL)
 	{
-		error_last = ERR_MEM_PF_INVALID;
+		c_error_last = C_ERR_MEM_PF_INVALID;
 		return NULL;
 	}
 
-	c_byte* physical_addr = page_resolve(&memory->page_table, address, required_perms);
+	c_byte* physical_addr = c_page_resolve(&memory->page_table, address, required_perms);
 
 	if(physical_addr == NULL) // Page fault
 	{
-		mem_pagefault(memory, address);
-		if(error_last)
+		c_mem_pagefault(memory, address);
+		if(c_error_last)
 			return NULL;
 
-		physical_addr = page_resolve(&memory->page_table, address, required_perms);
+		physical_addr = c_page_resolve(&memory->page_table, address, required_perms);
 		if(physical_addr == NULL)
 		{
-			error_last = ERR_MEM_PF_FAILED;
+			c_error_last = C_ERR_MEM_PF_FAILED;
 			return NULL;
 		}
 	}
@@ -105,17 +106,17 @@ c_byte* mem_resolve_address(memory_t* memory, c_addr address, c_byte required_pe
 	return physical_addr;
 }
 
-void mem_read_value(memory_t* memory, c_addr address, c_byte* out, size_t length, bool exec)
+void c_mem_read_value(c_memory_t* memory, c_addr address, c_byte* out, size_t length, bool exec)
 {
-	error_clear();
+	c_error_clear();
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	int offset;
 	for(offset = 0; offset < length; ++offset)
 	{
-		c_byte* phys = mem_resolve_address(memory, address + offset, (exec ? PAGE_EXEC : PAGE_READ));
-		if(error_last)
+		c_byte* phys = c_mem_resolve_address(memory, address + offset, (exec ? C_PAGE_EXEC : C_PAGE_READ));
+		if(c_error_last)
 		{
-			printf("[memory] error: %s\n", error_tostring(error_last));
+			printf("[memory] error: %s\n", c_error_tostring(c_error_last));
 			return;
 		}
 
@@ -126,17 +127,17 @@ void mem_read_value(memory_t* memory, c_addr address, c_byte* out, size_t length
 #endif
 }
 
-void mem_write_value(memory_t* memory, c_addr address, c_byte const* value, size_t length)
+void c_mem_write_value(c_memory_t* memory, c_addr address, c_byte const* value, size_t length)
 {
-	error_clear();
+	c_error_clear();
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	int offset;
 	for(offset = 0; offset < length; ++offset)
 	{
-		c_byte* phys = mem_resolve_address(memory, address + offset, PAGE_WRITE);
-		if(error_last)
+		c_byte* phys = c_mem_resolve_address(memory, address + offset, C_PAGE_WRITE);
+		if(c_error_last)
 		{
-			printf("[memory] error: %s\n", error_tostring(error_last));
+			printf("[memory] error: %s\n", c_error_tostring(c_error_last));
 			return;
 		}
 
@@ -147,43 +148,43 @@ void mem_write_value(memory_t* memory, c_addr address, c_byte const* value, size
 #endif
 }
 
-c_long mem_read_long(memory_t* memory, c_addr address, bool exec)
+c_long c_mem_read_long(c_memory_t* memory, c_addr address, bool exec)
 {
 	c_long data = 0;
-	mem_read_value(memory, address, (c_byte*)&data, sizeof(c_long), exec);
+	c_mem_read_value(memory, address, (c_byte*)&data, sizeof(c_long), exec);
 	return data;
 }
 
-c_short mem_read_short(memory_t* memory, c_addr address, bool exec)
+c_short c_mem_read_short(c_memory_t* memory, c_addr address, bool exec)
 {
 	c_short data = 0;
-	mem_read_value(memory, address, (c_byte*)&data, sizeof(c_short), exec);
+	c_mem_read_value(memory, address, (c_byte*)&data, sizeof(c_short), exec);
 	return data;
 }
 
-c_byte mem_read_byte(memory_t* memory, c_addr address, bool exec)
+c_byte c_mem_read_byte(c_memory_t* memory, c_addr address, bool exec)
 {
 	c_byte data = 0;
-	mem_read_value(memory, address, (c_byte*)&data, sizeof(c_byte), exec);
+	c_mem_read_value(memory, address, (c_byte*)&data, sizeof(c_byte), exec);
 	return data;
 }
 
-void mem_write_long(memory_t* memory, c_addr address, c_long data)
+void c_mem_write_long(c_memory_t* memory, c_addr address, c_long data)
 {
-	mem_write_value(memory, address, (c_byte*)&data, sizeof(c_long));
+	c_mem_write_value(memory, address, (c_byte*)&data, sizeof(c_long));
 }
 
-void mem_write_short(memory_t* memory, c_addr address, c_short data)
+void c_mem_write_short(c_memory_t* memory, c_addr address, c_short data)
 {
-	mem_write_value(memory, address, (c_byte*)&data, sizeof(c_short));
+	c_mem_write_value(memory, address, (c_byte*)&data, sizeof(c_short));
 }
 
-void mem_write_byte(memory_t* memory, c_addr address, c_byte data)
+void c_mem_write_byte(c_memory_t* memory, c_addr address, c_byte data)
 {
-	mem_write_value(memory, address, (c_byte*)&data, sizeof(c_byte));
+	c_mem_write_value(memory, address, (c_byte*)&data, sizeof(c_byte));
 }
 
-size_t mem_load_file(mem_handle memory, char const* filename, c_addr start)
+size_t c_mem_load_file(c_mem_handle memory, char const* filename, c_addr start)
 {
 	int file = open(filename, O_RDONLY);
 
@@ -201,7 +202,7 @@ size_t mem_load_file(mem_handle memory, char const* filename, c_addr start)
 		int i;
 		for(i=0; i<chunk_length; ++i)
 		{
-			mem_write_byte(memory, start + bytes_written, buffer[i]);
+			c_mem_write_byte(memory, start + bytes_written, buffer[i]);
 			++bytes_written;
 		}
 	}
@@ -209,3 +210,4 @@ size_t mem_load_file(mem_handle memory, char const* filename, c_addr start)
 	close(file);
 	return bytes_written;
 }
+
