@@ -28,7 +28,7 @@ void INT(c_cpu_t* cpu, c_operand_t const* index_operand, c_operand_t const* op2)
 	DEBUG_PRINTF("INT\n");
 	c_byte index = c_operand_read_value(cpu, index_operand);
 
-	if(index < cpu->ivt.length)
+	if(index < cpu->ivt.length && cpu->ivt.handlers[index] != NULL)
 		cpu->ivt.handlers[index](cpu);
 }
 
