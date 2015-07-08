@@ -2,11 +2,45 @@
 #include "error.h"
 
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 c_vector_t c_page_create_table()
 {
 	c_vector_t table;
 	c_vector_create(sizeof(c_page_t), 0, &table);
+	return table;
+}
+
+c_vector_t c_page_copy_table(c_vector_t from)
+{
+	c_vector_t table;
+	
+	printf("[page] creating new page table of initial size %lu\n", from.size);
+	c_vector_create(sizeof(c_page_t), from.size, &table);
+
+	int i;
+	for(i = 0; i < from.size; ++i)
+	{
+		printf("[page] copying page %d\n", i);
+		c_page_t* page = (c_page_t*)c_vector_resolve(&from, i);
+		c_page_t* new_page = (c_page_t*)c_vector_resolve(&table, i);
+		
+		new_page->id = page->id;
+		new_page->info = page->info;
+
+		new_page->mem = malloc(sizeof(c_byte) * C_PAGE_SIZE);
+		if(new_page->mem == NULL)
+		{
+			c_error_last = C_ERR_MEM_HOST_OOM;
+			break;
+		}
+
+		memcpy(new_page->mem, page->mem, C_PAGE_SIZE);
+	}
+
 	return table;
 }
 

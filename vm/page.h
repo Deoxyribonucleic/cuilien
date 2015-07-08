@@ -31,6 +31,7 @@ typedef struct c_page
 } c_page_t;
 
 c_vector_t c_page_create_table();
+c_vector_t c_page_copy_table(c_vector_t from);
 c_byte* c_page_resolve(c_vector_t* table, c_addr virtual_address, c_byte required_perms);
 void c_page_map(c_vector_t* table, c_addr virtual_address, c_page_info_t const* info, c_byte* physical_address);
 c_page_t* c_page_find(c_vector_t* table, c_page_id_t id);

@@ -15,7 +15,9 @@ typedef struct
 typedef c_memory_t* c_mem_handle;
 
 c_memory_t* c_mem_init(size_t size);
-void c_mem_free(c_memory_t* memory);
+void c_mem_free(c_memory_t* from);
+
+c_memory_t* c_mem_copy(c_memory_t* memory);
 
 c_long c_mem_read_long(c_memory_t* memory, c_addr address, bool exec);
 c_short c_mem_read_short(c_memory_t* memory, c_addr address, bool exec);

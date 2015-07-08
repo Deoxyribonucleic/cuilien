@@ -50,6 +50,18 @@ void c_mem_free(c_memory_t* memory)
 	free(memory);
 }
 
+c_memory_t* c_mem_copy(c_memory_t* from)
+{
+	c_memory_t* new = c_mem_init(from->max_size);
+	new->used = from->used;
+	
+	printf("[memory] copying page table (%lu pages)\n", from->page_table.size);
+	new->page_table = c_page_copy_table(from->page_table);
+	printf("[memory] %lu/%lu pages copied\n", new->page_table.size, from->page_table.size);
+
+	return new;
+}
+
 void c_mem_pagefault(c_memory_t* memory, c_addr address)
 {
 	c_error_clear();
