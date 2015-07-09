@@ -46,7 +46,7 @@ void c_mem_free(c_memory_t* memory)
 			++pages_freed;
 		}
 	}
-	printf("[memory] %d/%lu virtual memory pages freed\n", pages_freed, memory->page_table.size);
+	DEBUG_PRINTF("[memory] %d/%lu virtual memory pages freed\n", pages_freed, memory->page_table.size);
 	c_vector_free(&memory->page_table);
 	free(memory);
 }
