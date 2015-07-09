@@ -1,5 +1,6 @@
 #include "mem.h"
 #include "error.h"
+#include "debug.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -25,7 +26,7 @@ c_memory_t* c_mem_init(size_t size)
 
 	if(size != memory->max_size)
 	{
-		printf("[memory] warning: effective memory limit: %lu kB (%lu B is not page aligned)\n", memory->max_size / 1024, size);
+		DEBUG_PRINTF("[memory] warning: effective memory limit: %lu kB (%lu B is not page aligned)\n", memory->max_size / 1024, size);
 	}
 
 	return memory;
@@ -66,7 +67,7 @@ void c_mem_pagefault(c_memory_t* memory, c_addr address)
 {
 	c_error_clear();
 
-	printf("[memory] pagefault: paging 0x%08x\n", C_PAGE_ALIGN(address));
+	DEBUG_PRINTF("[memory] pagefault: paging 0x%08x\n", C_PAGE_ALIGN(address));
 
 	if(memory->used + C_PAGE_SIZE > memory->max_size)
 	{
@@ -128,7 +129,7 @@ void c_mem_read_value(c_memory_t* memory, c_addr address, c_byte* out, size_t le
 		c_byte* phys = c_mem_resolve_address(memory, address + offset, (exec ? C_PAGE_EXEC : C_PAGE_READ));
 		if(c_error_last)
 		{
-			printf("[memory] error: %s\n", c_error_tostring(c_error_last));
+			DEBUG_PRINTF("[memory] error: %s\n", c_error_tostring(c_error_last));
 			return;
 		}
 
@@ -149,7 +150,7 @@ void c_mem_write_value(c_memory_t* memory, c_addr address, c_byte const* value, 
 		c_byte* phys = c_mem_resolve_address(memory, address + offset, C_PAGE_WRITE);
 		if(c_error_last)
 		{
-			printf("[memory] error: %s\n", c_error_tostring(c_error_last));
+			DEBUG_PRINTF("[memory] error: %s\n", c_error_tostring(c_error_last));
 			return;
 		}
 

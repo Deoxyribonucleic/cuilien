@@ -1,5 +1,6 @@
 #include "page.h"
 #include "error.h"
+#include "debug.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -18,13 +19,13 @@ c_vector_t c_page_copy_table(c_vector_t from)
 {
 	c_vector_t table;
 	
-	printf("[page] creating new page table of initial size %lu\n", from.size);
+	DEBUG_PRINTF("[page] creating new page table of initial size %lu\n", from.size);
 	c_vector_create(sizeof(c_page_t), from.size, &table);
 
 	int i;
 	for(i = 0; i < from.size; ++i)
 	{
-		printf("[page] copying page %d\n", i);
+		DEBUG_PRINTF("[page] copying page %d\n", i);
 		c_page_t* page = (c_page_t*)c_vector_resolve(&from, i);
 		c_page_t* new_page = (c_page_t*)c_vector_resolve(&table, i);
 		

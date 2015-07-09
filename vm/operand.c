@@ -3,6 +3,7 @@
 #include "util.h"
 #include "mem.h"
 #include "cpu.h"
+#include "debug.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -191,7 +192,7 @@ void c_operand_write(c_cpu_t* cpu, c_operand_t const* op, c_byte const* data, si
 	}
 	else
 	{
-		printf("(not an l-value)\n");
+		DEBUG_PRINTF("(not an l-value)\n");
 	}
 }
 
