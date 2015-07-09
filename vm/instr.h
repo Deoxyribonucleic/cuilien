@@ -56,7 +56,14 @@ typedef struct c_cpu c_cpu_t;
 typedef struct c_operand c_operand_t;
 typedef void (*c_instruction_function)(c_cpu_t*, c_operand_t const* , c_operand_t const*);
 
+struct c_instr_info
+{
+	char const* name;
+	int operands;
+};
+
 extern c_instruction_function c_instruction_vector[C_INSTRUCTION_VECTOR_LENGTH];
+extern struct c_instr_info c_instruction_info[C_INSTRUCTION_VECTOR_LENGTH];
 void c_build_instruction_vector();
 
 #endif

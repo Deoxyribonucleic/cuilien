@@ -288,3 +288,43 @@ size_t c_mem_dump_to_file(c_mem_handle memory, char const* filename)
 	return written;
 }
 
+size_t c_mem_load_dump_file(c_mem_handle memory, char const* filename)
+{
+	FILE* fd = fopen(filename, "r");
+	if(!fd)
+	{
+		printf("[memory] failed to open dump file for reading: %s\n", filename);
+		return 0;
+	}
+
+	struct c_mem_file_header header;
+	fread(&header, sizeof(header), 1, fd);
+
+	if(header.page_size != C_PAGE_SIZE)
+	{
+		printf("[memory] dump file %s is incompatible with this build of Cuilien (PAGE SIZE %d != %d)\n", filename, header.page_size, C_PAGE_SIZE);
+		return 0;
+	}
+
+	printf("[memory] reading %d pages from %s...\n", header.num_pages, filename);
+
+	int i;
+	for(i=0; i<header.num_pages; ++i)
+	{
+		struct c_mem_page_header page_header;
+		c_byte* mem = malloc(C_PAGE_SIZE);
+
+		fread(&page_header, sizeof(page_header), 1, fd);
+		fread(mem, sizeof(c_byte), C_PAGE_SIZE, fd);
+
+		page_header.info.owned = true;
+		c_page_map(&memory->page_table, page_header.address, &page_header.info, mem);
+	}
+
+	printf("[memory] %d pages loaded from %s\n", i, filename);
+
+	fclose(fd);
+	return i;
+}
+
+

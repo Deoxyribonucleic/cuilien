@@ -34,6 +34,8 @@ size_t c_mem_load_file(c_mem_handle memory, char const* filename, c_addr start);
 
 size_t c_mem_load(c_mem_handle memory, char const* from, size_t length, c_addr start);
 size_t c_mem_dump(c_mem_handle memory, char* to, size_t length, c_addr start);
+
 size_t c_mem_dump_to_file(c_mem_handle memory, char const* filename);
+size_t c_mem_load_dump_file(c_mem_handle memory, char const* filename);
 
 #endif

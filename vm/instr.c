@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 c_instruction_function c_instruction_vector[C_INSTRUCTION_VECTOR_LENGTH];
+struct c_instr_info c_instruction_info[C_INSTRUCTION_VECTOR_LENGTH];
 bool instruction_vector_built = false;
 
 void NOP(c_cpu_t* cpu, c_operand_t const* op1, c_operand_t const* op2)
@@ -392,57 +393,62 @@ void PUTC(c_cpu_t* cpu, c_operand_t const* operand, c_operand_t const* unused)
 	putchar(character);
 }
 
+#define SET(a, b) { c_instruction_vector[C_INSTR_##a] = a; c_instruction_info[C_INSTR_##a].name = #a; c_instruction_info[C_INSTR_##a].operands = b; }
+
 void c_build_instruction_vector()
 {
 	if(instruction_vector_built)
 		return;
 
 	memset(c_instruction_vector, 0, sizeof(c_instruction_function) * C_INSTRUCTION_VECTOR_LENGTH);
-	c_instruction_function* set = c_instruction_vector;
+	memset(c_instruction_info, 0, sizeof(struct c_instr_info) * C_INSTRUCTION_VECTOR_LENGTH);
 
-	set[C_INSTR_NOP]  = NOP;
-	set[C_INSTR_HALT] = HALT;
-	set[C_INSTR_INT]  = INT;
-	set[C_INSTR_MOV]  = MOV;
+	SET(NOP, 0);
+	SET(HALT, 0);
+	SET(INT, 1);
+	SET(MOV, 2);
 
-	set[C_INSTR_JMP]  = JMP;
+	SET(JMP, 1);
 
-	set[C_INSTR_INC]  = INC;
-	set[C_INSTR_DEC]  = DEC;
+	SET(INC, 1);
+	SET(DEC, 1);
 
-	set[C_INSTR_ADD]  = ADD;
-	set[C_INSTR_SUB]  = SUB;
-	set[C_INSTR_MUL]  = MUL;
-	set[C_INSTR_DIV]  = DIV;
+	SET(ADD, 2);
+	SET(SUB, 2);
+	SET(MUL, 2);
+	SET(DIV, 2);
 
-	set[C_INSTR_SHOW] = SHOW;
+	SET(SHOW, 1);
 
-	set[C_INSTR_CMP]  = CMP;
-	set[C_INSTR_SCMP] = SCMP;
-	set[C_INSTR_TEST] = TEST;
-	set[C_INSTR_STEST]= STEST;
+	SET(CMP, 2);
+	SET(SCMP, 2);
+	SET(TEST, 1);
+	SET(STEST, 1);
 
-	set[C_INSTR_JZ]   = JZ;
-	set[C_INSTR_JNZ]  = JNZ;
-	set[C_INSTR_JEQ]  = JEQ;
-	set[C_INSTR_JNEQ] = JNEQ;
-	set[C_INSTR_JGT]  = JGT;
-	set[C_INSTR_JNGT] = JNGT;
-	set[C_INSTR_JLT]  = JLT;
-	set[C_INSTR_JNLT] = JNLT;
+	SET(JZ, 1);
+	SET(JNZ, 1);
+	SET(JEQ, 1);
+	SET(JNEQ, 1);
+	SET(JGT, 1);
+	SET(JNGT, 1);
+	SET(JLT, 1);
+	SET(JNLT, 1);
 
-	set[C_INSTR_AND]  = AND;
-	set[C_INSTR_OR]   = OR;
-	set[C_INSTR_XOR]  = XOR;
-	set[C_INSTR_NOT]  = NOT;
+	SET(AND, 2);
+	SET(OR, 2);
+	SET(XOR, 2);
+	SET(NOT, 1);
 
-	set[C_INSTR_PUSH] = PUSH;
-	set[C_INSTR_POP]  = POP;
+	SET(PUSH, 1);
+	SET(POP, 1);
 
-	set[C_INSTR_CALL] = CALL;
-	set[C_INSTR_RET]  = RET;
+	SET(CALL, 1);
+	SET(RET, 0);
 
-	set[C_INSTR_PUTC] = PUTC;
+	SET(PUTC, 1);
 
 	instruction_vector_built = true;
 }
+
+#undef SET
+

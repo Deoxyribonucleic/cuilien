@@ -91,8 +91,15 @@ c_byte* c_page_resolve(c_vector_t* table, c_addr virtual_address, c_byte require
 
 void c_page_map(c_vector_t* table, c_addr virtual_address, c_page_info_t const* info, c_byte* physical_address)
 {
+	c_page_id_t id = c_page_get_id(virtual_address);
+	if(c_page_find(table, id))
+	{
+		printf("[page] page %08x already mapped\n", virtual_address);
+		return;
+	}
+
 	c_page_t new_page;
-	new_page.id = c_page_get_id(virtual_address);
+	new_page.id = id;
 	new_page.info = *info;
 	new_page.mem = physical_address;
 
