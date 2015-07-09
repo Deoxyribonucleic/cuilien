@@ -249,3 +249,42 @@ size_t c_mem_dump(c_mem_handle memory, char* to, size_t length, c_addr start)
 	return i;
 }
 
+struct c_mem_file_header
+{
+	uint16_t page_size;
+	uint32_t num_pages;
+};
+
+struct c_mem_page_header
+{
+	uint32_t address;
+	c_page_info_t info;
+};
+
+size_t c_mem_dump_to_file(c_mem_handle memory, char const* filename)
+{
+	FILE* fd = fopen(filename, "w");
+	if(!fd)
+	{
+		printf("[memory] failed to open dump file for writing: %s", filename);
+		return 0;
+	}
+
+	size_t written = 0;
+
+	struct c_mem_file_header header = { C_PAGE_SIZE, memory->page_table.size };
+	written += fwrite(&header, sizeof(header), 1, fd);
+
+	int i;
+	for(i=0; i<memory->page_table.size; ++i)
+	{
+		c_page_t* page = (c_page_t*)c_vector_resolve(&memory->page_table, i);
+		struct c_mem_page_header page_header = { page->id * C_PAGE_SIZE, page->info };
+		written += fwrite(&page_header, sizeof(page_header), 1, fd);
+		written += fwrite(page->mem, sizeof(c_byte), C_PAGE_SIZE, fd);
+	}
+
+	fclose(fd);
+	return written;
+}
+
