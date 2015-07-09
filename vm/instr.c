@@ -102,6 +102,12 @@ void DIV(c_cpu_t* cpu, c_operand_t const* op1, c_operand_t const* op2)
 	c_word op2_val = c_operand_read_value(cpu, op2);
 	c_word op1_val = c_operand_read_value(cpu, op1);
 
+	if(op2_val == 0)
+	{
+		cpu->context->reg.flags = FLAG_ERROR;
+		return;
+	}
+
 	c_operand_write_value(cpu, op1, (c_word)(op1_val / op2_val));
 	cpu->context->reg.a = op1_val % op2_val;
 }
