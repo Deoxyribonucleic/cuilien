@@ -21,6 +21,7 @@ typedef struct c_context
 	} reg;
 
 	c_memory_t* memory;
+	void* user_context;
 } c_context_t;
 
 typedef struct c_cpu
